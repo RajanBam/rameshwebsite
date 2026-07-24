@@ -1,0 +1,26 @@
+---
+import ToolShell from '../../layouts/ToolShell.astro';
+import { IMPLEMENTED_TOOLS, getTool } from '../../lib/registry';
+
+// Only implemented tools get a page — no thin "coming soon" URLs.
+import PdfMerge from '../../components/tools/PdfMerge.tsx';
+import ImageCompress from '../../components/tools/ImageCompress.tsx';
+import JsonFormatter from '../../components/tools/JsonFormatter.tsx';
+import QrGenerator from '../../components/tools/QrGenerator.tsx';
+
+export function getStaticPaths() {
+  return IMPLEMENTED_TOOLS.map((t) => ({ params: { slug: t.slug } }));
+}
+
+const { slug } = Astro.params;
+const tool = getTool(slug!)!;
+// Explicit per-component rendering: Astro needs a statically-known component
+// reference to generate the hydration script (a runtime lookup won't resolve).
+---
+
+<ToolShell tool={tool}>
+  {tool.component === 'PdfMerge' && <PdfMerge client:load />}
+  {tool.component === 'ImageCompress' && <ImageCompress client:only="preact" />}
+  {tool.component === 'JsonFormatter' && <JsonFormatter client:load />}
+  {tool.component === 'QrGenerator' && <QrGenerator client:load />}
+</ToolShell>

@@ -1,0 +1,161 @@
+/* Shared UI for interactive tool islands — dropzones, buttons, rows.
+   Keeps every tool visually consistent with the design system. */
+
+.tool-card {
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+/* Dropzone */
+.dropzone {
+  border: 2px dashed rgba(0, 0, 0, 0.14);
+  border-radius: var(--radius-sm);
+  padding: clamp(2rem, 8vw, 3.5rem) 1.5rem;
+  text-align: center;
+  transition: border-color 0.15s var(--ease), background 0.15s var(--ease);
+  cursor: pointer;
+  background: var(--gray);
+}
+.dropzone:hover, .dropzone.drag {
+  border-color: var(--blue);
+  background: rgba(0, 102, 204, 0.04);
+}
+.dropzone .dz-title { font-size: var(--t-sub); font-weight: 500; }
+.dropzone .dz-hint { color: var(--dim); font-size: var(--t-small); margin-top: 0.4rem; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 980px;
+  padding: 0.7rem 1.5rem;
+  font-size: var(--t-body);
+  font-weight: 500;
+  transition: background 0.15s var(--ease), opacity 0.15s var(--ease);
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: var(--blue-press); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-ghost {
+  background: transparent;
+  color: var(--blue);
+  border: 1px solid rgba(0, 102, 204, 0.3);
+}
+.btn-ghost:hover { background: rgba(0, 102, 204, 0.06); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem; }
+
+/* File / result rows */
+.file-list { list-style: none; margin: 1.25rem 0 0; padding: 0; }
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+  background: #fff;
+}
+.file-row.dragging { opacity: 0.5; }
+.file-row .fr-handle { cursor: grab; color: var(--dim); user-select: none; }
+.file-row .fr-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--t-small);
+}
+.file-row .fr-meta {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--t-small);
+  color: var(--dim);
+}
+.file-row .fr-remove {
+  background: none; border: none; color: var(--dim);
+  font-size: 1.1rem; line-height: 1; padding: 0.2rem;
+}
+.file-row .fr-remove:hover { color: var(--ink); }
+
+/* Status pills */
+.pill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+}
+.pill-done { background: rgba(0, 138, 92, 0.12); color: var(--green); }
+.pill-error { background: rgba(200, 40, 40, 0.12); color: #c22; }
+.pill-processing { background: rgba(0, 102, 204, 0.12); color: var(--blue); }
+
+/* Progress */
+.progress {
+  height: 6px;
+  background: var(--gray);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+.progress > i {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+  transition: width 0.2s var(--ease);
+}
+
+/* Stat readouts (numbers are mono/tabular) */
+.stat-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.stat .stat-val {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.stat .stat-label { color: var(--dim); font-size: var(--t-small); }
+
+/* Text / code areas */
+.tool-textarea {
+  width: 100%;
+  min-height: 200px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  padding: 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  resize: vertical;
+  background: #fff;
+  color: var(--ink);
+}
+.tool-textarea:focus { outline: 2px solid var(--blue); outline-offset: 0; border-color: transparent; }
+
+.tool-error {
+  color: #c22;
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  margin-top: 0.75rem;
+}
+.field-label { display: block; font-size: var(--t-small); font-weight: 500; margin-bottom: 0.4rem; }
+.field { margin-bottom: 1rem; }
+.text-input, .select-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--t-body);
+  background: #fff;
+  color: var(--ink);
+}

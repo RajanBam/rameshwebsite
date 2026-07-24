@@ -1,0 +1,81 @@
+---
+import { CATEGORIES, toolsByCategory, type Category } from '../lib/registry';
+const cats = Object.keys(CATEGORIES) as Category[];
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <span class="brand">ToolShelf</span>
+      <p class="tagline">Fast tools that run in your browser.<br />Your files never leave your device.</p>
+      <span class="trust"><span class="dot"></span>0&nbsp;B uploaded</span>
+    </div>
+    {cats.map((cat) => {
+      const tools = toolsByCategory(cat).filter((t) => t.component);
+      if (tools.length === 0) return null;
+      return (
+        <div class="footer-col">
+          <h4>{CATEGORIES[cat].label}</h4>
+          <ul>
+            {tools.map((t) => <li><a href={`/tools/${t.slug}/`}>{t.name}</a></li>)}
+          </ul>
+        </div>
+      );
+    })}
+  </div>
+  <div class="container footer-legal">
+    <span>© {year} ToolShelf</span>
+    <nav>
+      <a href="/tools/">All Tools</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/about/">About</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--gray);
+    border-top: 1px solid var(--hairline);
+    padding-block: 3rem 2rem;
+    margin-top: 4rem;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr repeat(auto-fit, minmax(120px, 1fr));
+    gap: 2rem;
+  }
+  .footer-brand .brand { font-weight: 600; font-size: 1.05rem; }
+  .footer-brand .tagline {
+    color: var(--dim);
+    font-size: var(--t-small);
+    margin-block: 0.75rem;
+  }
+  .footer-col h4 {
+    font-size: var(--t-small);
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+  }
+  .footer-col ul { list-style: none; margin: 0; padding: 0; }
+  .footer-col li { margin-bottom: 0.5rem; }
+  .footer-col a { color: var(--dim); font-size: var(--t-small); }
+  .footer-col a:hover { color: var(--blue); }
+  .footer-legal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
+    color: var(--dim);
+    font-size: var(--t-small);
+  }
+  .footer-legal nav { display: flex; gap: 1.25rem; }
+  .footer-legal a { color: var(--dim); }
+  @media (max-width: 640px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .footer-brand { grid-column: 1 / -1; }
+    .footer-legal { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>

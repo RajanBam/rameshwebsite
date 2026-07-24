@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { TOOLS, CATEGORIES, type Category } from '../../lib/registry';
+const cats = Object.keys(CATEGORIES) as Category[];
+---
+
+<BaseLayout
+  title="All Tools — free, private, in your browser | ToolShelf"
+  description="Every ToolShelf tool: PDF, image, finance and developer utilities that run 100% in your browser. Unlimited files, nothing uploaded, no sign-up."
+  keywords={['free online tools', 'browser tools', 'privacy tools', 'no upload tools']}
+>
+  <section class="index-hero container">
+    <h1>All tools</h1>
+    <p>Everything runs in your browser. Your files never leave your device.</p>
+  </section>
+
+  {cats.map((cat) => {
+    const tools = TOOLS.filter((t) => t.category === cat);
+    return (
+      <section class="cat container">
+        <div class="cat-head">
+          <h2>{CATEGORIES[cat].label}</h2>
+          <span>{CATEGORIES[cat].blurb}</span>
+        </div>
+        <div class="grid">
+          {tools.map((t) => (
+            t.component ? (
+              <a class="card" href={`/tools/${t.slug}/`}>
+                <span class="card-name">{t.name}</span>
+                <span class="card-tag">{t.tagline}</span>
+                <span class="action" aria-hidden="true"></span>
+              </a>
+            ) : (
+              <div class="card card-soon">
+                <span class="card-name">{t.name}</span>
+                <span class="card-tag">{t.tagline}</span>
+                <span class="soon">Soon</span>
+              </div>
+            )
+          ))}
+        </div>
+      </section>
+    );
+  })}
+</BaseLayout>
+
+<style>
+  .index-hero { padding-top: clamp(2.5rem, 7vw, 4rem); text-align: center; }
+  .index-hero h1 { font-size: var(--t-stage); }
+  .index-hero p { color: var(--dim); font-size: var(--t-sub); margin-top: 0.75rem; }
+  .cat { margin-top: clamp(2.5rem, 6vw, 4rem); }
+  .cat-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.25rem; }
+  .cat-head h2 { font-size: var(--t-title); }
+  .cat-head span { color: var(--dim); font-size: var(--t-small); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1.5rem;
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  }
+  a.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); text-decoration: none; }
+  .card-name { font-weight: 600; font-size: 1.15rem; color: var(--ink); }
+  .card-tag { color: var(--dim); font-size: var(--t-small); }
+  .card-soon { opacity: 0.6; }
+  .soon {
+    position: absolute; top: 1rem; right: 1rem;
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--dim); border: 1px solid var(--hairline);
+    padding: 0.1rem 0.45rem; border-radius: 6px;
+  }
+  .card .action { margin-top: 0.25rem; font-size: var(--t-small); }
+</style>

@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Privacy — don't trust us, verify it | ToolShelf"
+  description="ToolShelf runs entirely in your browser. Your files are never uploaded. Here are three ways to prove it yourself."
+  keywords={['privacy tools', 'no upload', 'client-side processing', 'offline tools']}
+>
+  <section class="p-hero container center">
+    <h1>Don't trust us.<br />Verify it.</h1>
+    <p class="sub">Every tool here runs inside your browser tab. Your files are never sent to a server — not ours, not anyone's. You don't have to take our word for it. Check it yourself, three ways.</p>
+  </section>
+
+  <section class="container cards">
+    <div class="verify-card">
+      <span class="vc-num mono">01</span>
+      <h2>Watch the Network tab</h2>
+      <p>Open your browser's developer tools, go to the Network tab, and use any tool. You'll see no upload request for your files — because there isn't one.</p>
+    </div>
+    <div class="verify-card">
+      <span class="vc-num mono">02</span>
+      <h2>Kill your Wi-Fi</h2>
+      <p>Load a tool, then turn off your internet connection and use it. Everything still works. A tool that uploaded your files couldn't.</p>
+    </div>
+    <div class="verify-card">
+      <span class="vc-num mono">03</span>
+      <h2>Read the source</h2>
+      <p>The processing code ships to your browser in plain sight. Inspect it, or read the project — there's no server step to hide.</p>
+    </div>
+  </section>
+
+  <section class="container statement-block">
+    <p class="trust big"><span class="dot"></span>0&nbsp;B uploaded</p>
+    <p class="sub">This is the one promise that never changes. We may add ads below tools later to keep the site running, but your files will always stay on your device.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .p-hero { padding-top: clamp(3rem, 8vw, 5rem); max-width: 760px; text-align: center; }
+  .center { text-align: center; }
+  .p-hero h1 { font-size: var(--t-stage); }
+  .sub { color: var(--dim); font-size: var(--t-sub); margin-top: 1.25rem; }
+  .p-hero .sub { max-width: 60ch; margin-inline: auto; }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+  }
+  .verify-card {
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 2rem;
+  }
+  .vc-num { color: var(--blue); font-size: var(--t-small); }
+  .verify-card h2 { font-size: 1.3rem; margin-block: 0.75rem; }
+  .verify-card p { color: var(--dim); font-size: var(--t-small); }
+  .statement-block { text-align: center; margin-top: clamp(3rem, 8vw, 5rem); max-width: 600px; }
+  .trust.big { font-size: 1.75rem; justify-content: center; }
+  .trust.big .dot { width: 12px; height: 12px; }
+  .statement-block .sub { margin-top: 1rem; }
+</style>

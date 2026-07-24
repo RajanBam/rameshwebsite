@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// TODO(owner): fill in your public name + portfolio link below.
+// Kept generic for now so nothing incorrect ships. These credentials are
+// the E-E-A-T trust signal Google now weighs heavily, so make them real.
+const author = {
+  name: 'The maker',                 // ← your public name
+  site: '',                          // ← e.g. https://rameshkadariya.com.np
+  credentials: [
+    '3 apps shipped on the Google Play Store',
+    '2 published Chrome extensions',
+    '1 Visual Studio Code extension',
+    'Augmented-reality camera filters',
+  ],
+};
+---
+
+<BaseLayout
+  title="About ToolShelf — who builds it and why"
+  description="ToolShelf is a growing set of free tools that run entirely in your browser, built by an independent developer who ships products for a living."
+  keywords={['about toolshelf', 'client-side tools', 'indie developer tools']}
+>
+  <section class="container about">
+    <h1>Built by someone who ships.</h1>
+    <p class="lead">ToolShelf is a growing collection of free tools that do their work entirely inside your browser. No uploads, no accounts, no limits imposed to save server costs — because there is no server in the loop.</p>
+
+    <h2>Who makes it</h2>
+    <p>ToolShelf is built and maintained by an independent developer with a track record of shipping real products:</p>
+    <ul class="creds">
+      {author.credentials.map((c) => <li>{c}</li>)}
+    </ul>
+    {author.site && <p><a class="action" href={author.site}>See more of their work</a></p>}
+
+    <h2>Why client-side</h2>
+    <p>Most online tools upload your files to a server to process them. That costs money per file, which is why they cap free tiers — 5&nbsp;MB here, 40 files there. ToolShelf runs the processing on your own device instead. That flips the economics: there's no per-file cost, so there's no reason to limit you, and your files never leave your hands.</p>
+
+    <h2>How it stays free</h2>
+    <p>The site is static and cheap to host. Later, we may show ads below the tools and their results — never above, never as pop-ups. What we will never do is upload your files or sell your data. The permanent promise is simple: your files stay on your device.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .about { max-width: 720px; padding-top: clamp(3rem, 8vw, 5rem); }
+  .about h1 { font-size: var(--t-title); }
+  .lead { font-size: var(--t-sub); margin-top: 1.25rem; }
+  .about h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 0.75rem; }
+  .about p { color: var(--ink); }
+  .creds { color: var(--dim); padding-left: 1.25rem; }
+  .creds li { margin-bottom: 0.4rem; }
+</style>

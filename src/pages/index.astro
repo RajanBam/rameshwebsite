@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TOOLS } from '../lib/registry';
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'ToolShelf',
+  description: 'Free tools that run 100% in your browser. Unlimited files, nothing uploaded.',
+  url: Astro.site?.href,
+}];
+
+const live = TOOLS.filter((t) => t.component);
+---
+
+<BaseLayout
+  title="ToolShelf — free tools that never upload your files"
+  description="PDF, image and finance tools that run 100% in your browser. Unlimited files, unlimited size, nothing uploaded, works offline."
+  keywords={['free online tools', 'client-side tools', 'merge pdf', 'compress images', 'privacy tools']}
+  jsonLd={jsonLd}
+>
+  <!-- Hero -->
+  <section class="stage stage-white">
+    <div class="container stage-inner center">
+      <h1 class="hero">Tools that keep<br />your files.</h1>
+      <p class="sub">Unlimited files. Nothing uploaded. Works offline.</p>
+      <div class="links">
+        <a class="action" href="/tools/">Browse all tools</a>
+        <a class="action" href="/privacy/">See how it works</a>
+      </div>
+      <p class="trust hero-trust"><span class="dot"></span>0&nbsp;B uploaded, ever</p>
+    </div>
+  </section>
+
+  <!-- PDF -->
+  <section class="stage stage-gray">
+    <div class="container stage-inner">
+      <div class="stage-copy">
+        <h2>Merge anything.<br />Upload nothing.</h2>
+        <p class="sub">Combine and split PDFs in the tab you're in. Contracts, IDs and bank statements never touch a server.</p>
+        <div class="links">
+          <a class="action" href="/tools/pdf-merge/">Merge PDF</a>
+          <a class="action" href="/tools/">More PDF tools</a>
+        </div>
+      </div>
+      <div class="stage-visual">
+        <div class="mock">
+          <div class="mock-stack"><span></span><span></span><span></span></div>
+          <div class="mock-label mono">merged.pdf</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Images -->
+  <section class="stage stage-white">
+    <div class="container stage-inner reverse">
+      <div class="stage-copy">
+        <h2>500 photos<br />at once.</h2>
+        <p class="sub">Compress and convert by the hundred. The batch workflow single-image tools never gave you.</p>
+        <div class="links">
+          <a class="action" href="/tools/image-compress/">Compress images</a>
+          <a class="action" href="/tools/">More image tools</a>
+        </div>
+      </div>
+      <div class="stage-visual">
+        <div class="mock">
+          <div class="mock-grid">{Array.from({ length: 9 }).map(() => <span></span>)}</div>
+          <div class="mock-label mono">−72% saved</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculators -->
+  <section class="stage stage-gray">
+    <div class="container stage-inner">
+      <div class="stage-copy">
+        <h2>Answers as<br />you type.</h2>
+        <p class="sub">Income tax, EMIs and more — instant, precise, and never sent anywhere.</p>
+        <div class="links">
+          <a class="action" href="/tools/">See calculators</a>
+        </div>
+      </div>
+      <div class="stage-visual">
+        <div class="mock">
+          <div class="mock-num mono">Rs 1,42,500</div>
+          <div class="mock-label mono">tax · FY 2082/83</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Offline statement -->
+  <section class="stage stage-white">
+    <div class="container stage-inner center">
+      <h2 class="statement">It even works<br />with the Wi-Fi off.</h2>
+      <p class="sub">There's no server to reach. Turn off your connection and try — everything still runs.</p>
+      <a class="action" href="/privacy/">Don't trust us. Verify it.</a>
+    </div>
+  </section>
+
+  <!-- Quick links -->
+  <section class="stage stage-gray">
+    <div class="container">
+      <h3 class="quick-title">Jump in</h3>
+      <div class="quick-grid">
+        {live.map((t) => (
+          <a class="quick" href={`/tools/${t.slug}/`}>
+            <span>{t.name}</span>
+            <span class="action" aria-hidden="true"></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .stage { padding-block: clamp(4rem, 12vw, 8rem); }
+  .stage-white { background: var(--white); }
+  .stage-gray { background: var(--gray); }
+  .stage-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 6vw, 4rem);
+    align-items: center;
+  }
+  .stage-inner.center { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+  .hero { font-size: var(--t-hero); }
+  .statement { font-size: var(--t-stage); }
+  .stage-copy h2 { font-size: var(--t-stage); }
+  .sub {
+    margin-top: 1.25rem;
+    color: var(--dim);
+    font-size: var(--t-sub);
+    max-width: 30ch;
+  }
+  .center .sub { max-width: 40ch; }
+  .links { display: flex; gap: 1.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .center .links { justify-content: center; }
+  .hero-trust { margin-top: 2rem; }
+
+  /* Floating product-card visuals */
+  .stage-visual { display: flex; justify-content: center; }
+  .mock {
+    width: min(360px, 100%);
+    aspect-ratio: 4 / 3;
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lift);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 2rem;
+  }
+  .stage-gray .mock { background: #fff; }
+  .stage-white .mock { background: var(--gray); }
+  .mock-label { color: var(--dim); font-size: var(--t-small); }
+  .mock-num { font-size: clamp(1.75rem, 5vw, 2.5rem); font-weight: 500; color: var(--ink); }
+  .mock-stack { display: grid; gap: 0.5rem; width: 60%; }
+  .mock-stack span { height: 14px; border-radius: 4px; background: linear-gradient(90deg, #d9e6f7, #eef4fb); }
+  .mock-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 70%; }
+  .mock-grid span { aspect-ratio: 1; border-radius: 6px; background: linear-gradient(135deg, #dbeafe, #f0f9ff); }
+
+  .quick-title { font-size: var(--t-title); margin-bottom: 1.5rem; }
+  .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
+  .quick {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    font-weight: 500;
+    transition: transform 0.15s var(--ease);
+  }
+  .quick:hover { transform: translateY(-2px); text-decoration: none; }
+  .quick .action { font-size: 1rem; }
+
+  @media (max-width: 720px) {
+    .stage-inner { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+    .stage-inner.reverse .stage-copy { order: 0; }
+    .sub { max-width: 34ch; }
+    .links { justify-content: center; }
+  }
+</style>
