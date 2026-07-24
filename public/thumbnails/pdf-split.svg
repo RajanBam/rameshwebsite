@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Split PDF">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef4fe"/><stop offset="1" stop-color="#dce8fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="240" rx="24" fill="url(#bg)"/>
+  <rect x="128" y="46" width="64" height="82" rx="8" fill="#fff" stroke="#c7d8f0"/>
+  <line x1="160" y1="40" x2="160" y2="200" stroke="#0066cc" stroke-width="2" stroke-dasharray="5 5"/>
+  <rect x="70" y="140" width="60" height="66" rx="8" fill="#fff" stroke="#0066cc" stroke-width="2" transform="rotate(-6 100 173)"/>
+  <rect x="190" y="140" width="60" height="66" rx="8" fill="#fff" stroke="#0066cc" stroke-width="2" transform="rotate(6 220 173)"/>
+  <circle cx="160" cy="128" r="9" fill="#0066cc"/>
+  <path d="M156 124 L164 132 M164 124 L156 132" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+</svg>

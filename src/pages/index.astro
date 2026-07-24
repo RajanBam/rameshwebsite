@@ -44,10 +44,7 @@ const live = TOOLS.filter((t) => t.component);
         </div>
       </div>
       <div class="stage-visual">
-        <div class="mock">
-          <div class="mock-stack"><span></span><span></span><span></span></div>
-          <div class="mock-label mono">merged.pdf</div>
-        </div>
+        <img class="shot" src="/thumbnails/pdf-merge.svg" alt="Merge PDF" width="360" height="270" />
       </div>
     </div>
   </section>
@@ -64,10 +61,7 @@ const live = TOOLS.filter((t) => t.component);
         </div>
       </div>
       <div class="stage-visual">
-        <div class="mock">
-          <div class="mock-grid">{Array.from({ length: 9 }).map(() => <span></span>)}</div>
-          <div class="mock-label mono">−72% saved</div>
-        </div>
+        <img class="shot" src="/thumbnails/image-compress.svg" alt="Compress images" width="360" height="270" />
       </div>
     </div>
   </section>
@@ -83,10 +77,7 @@ const live = TOOLS.filter((t) => t.component);
         </div>
       </div>
       <div class="stage-visual">
-        <div class="mock">
-          <div class="mock-num mono">Rs 1,42,500</div>
-          <div class="mock-label mono">tax · FY 2082/83</div>
-        </div>
+        <img class="shot" src="/thumbnails/nepal-income-tax.svg" alt="Nepal income tax calculator" width="360" height="270" />
       </div>
     </div>
   </section>
@@ -143,27 +134,13 @@ const live = TOOLS.filter((t) => t.component);
 
   /* Floating product-card visuals */
   .stage-visual { display: flex; justify-content: center; }
-  .mock {
-    width: min(360px, 100%);
+  .shot {
+    width: min(400px, 100%);
+    height: auto;
     aspect-ratio: 4 / 3;
-    background: #fff;
     border-radius: var(--radius);
     box-shadow: var(--shadow-lift);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-    padding: 2rem;
   }
-  .stage-gray .mock { background: #fff; }
-  .stage-white .mock { background: var(--gray); }
-  .mock-label { color: var(--dim); font-size: var(--t-small); }
-  .mock-num { font-size: clamp(1.75rem, 5vw, 2.5rem); font-weight: 500; color: var(--ink); }
-  .mock-stack { display: grid; gap: 0.5rem; width: 60%; }
-  .mock-stack span { height: 14px; border-radius: 4px; background: linear-gradient(90deg, #d9e6f7, #eef4fb); }
-  .mock-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; width: 70%; }
-  .mock-grid span { aspect-ratio: 1; border-radius: 6px; background: linear-gradient(135deg, #dbeafe, #f0f9ff); }
 
   .quick-title { font-size: var(--t-title); margin-bottom: 1.5rem; }
   .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }

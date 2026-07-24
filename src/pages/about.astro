@@ -1,39 +1,75 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-// TODO(owner): fill in your public name + portfolio link below.
-// Kept generic for now so nothing incorrect ships. These credentials are
-// the E-E-A-T trust signal Google now weighs heavily, so make them real.
+// Real author details (E-E-A-T trust signal). Add the direct app/extension
+// deep-links to `projects` whenever you have them — the portfolio link below
+// is the authoritative source that lists them all.
 const author = {
-  name: 'The maker',                 // ← your public name
-  site: '',                          // ← e.g. https://rameshkadariya.com.np
+  name: 'Ramesh Kadariya',
+  role: 'Mobile & Web Developer · AR Filter Creator · Researcher',
+  location: 'Chitwan, Nepal',
+  portfolio: 'https://rameshkadariya.com.np',
+  email: 'contact@rameshkadariya.com.np',
+  github: 'https://github.com/RameshKadariya',
   credentials: [
-    '3 apps shipped on the Google Play Store',
-    '2 published Chrome extensions',
-    '1 Visual Studio Code extension',
-    'Augmented-reality camera filters',
+    'BSc (Hons) Computer Systems Engineering — First Class (ISMT College / University of Sunderland)',
+    '3 published Android apps on the Google Play Store',
+    '2 published Chrome Web Store extensions',
+    '6 augmented-reality camera filters (Lens Studio, Effect House)',
+    'Co-authored research on AI-augmented database systems and NLP-to-SQL with LLMs',
   ],
+  // Add entries as { label, url } to render direct links.
+  projects: [] as { label: string; url: string }[],
+};
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: author.name,
+  jobTitle: 'Software Developer',
+  url: author.portfolio,
+  email: author.email,
+  sameAs: [author.portfolio, author.github],
 };
 ---
 
 <BaseLayout
-  title="About ToolShelf — who builds it and why"
-  description="ToolShelf is a growing set of free tools that run entirely in your browser, built by an independent developer who ships products for a living."
-  keywords={['about toolshelf', 'client-side tools', 'indie developer tools']}
+  title="About ToolShelf — built by Ramesh Kadariya"
+  description="ToolShelf is a growing set of free tools that run entirely in your browser, built by Ramesh Kadariya — a Nepal-based developer with published apps, extensions and research."
+  keywords={['about toolshelf', 'ramesh kadariya', 'client-side tools', 'indie developer nepal']}
+  jsonLd={[personLd]}
 >
   <section class="container about">
     <h1>Built by someone who ships.</h1>
     <p class="lead">ToolShelf is a growing collection of free tools that do their work entirely inside your browser. No uploads, no accounts, no limits imposed to save server costs — because there is no server in the loop.</p>
 
-    <h2>Who makes it</h2>
-    <p>ToolShelf is built and maintained by an independent developer with a track record of shipping real products:</p>
+    <div class="author-card">
+      <div>
+        <div class="a-name">{author.name}</div>
+        <div class="a-role">{author.role}</div>
+        <div class="a-loc">{author.location}</div>
+      </div>
+      <div class="a-links">
+        <a class="action" href={author.portfolio} rel="author">Portfolio</a>
+        <a class="action" href={author.github} rel="me">GitHub</a>
+        <a class="action" href={`mailto:${author.email}`}>Email</a>
+      </div>
+    </div>
+
+    <h2>Track record</h2>
+    <p>ToolShelf is built and maintained by a developer with a history of shipping real products used by real people:</p>
     <ul class="creds">
       {author.credentials.map((c) => <li>{c}</li>)}
     </ul>
-    {author.site && <p><a class="action" href={author.site}>See more of their work</a></p>}
+    {author.projects.length > 0 && (
+      <ul class="proj-links">
+        {author.projects.map((p) => <li><a class="action" href={p.url}>{p.label}</a></li>)}
+      </ul>
+    )}
+    <p>You can see the full body of work — apps, extensions and AR filters — on <a href={author.portfolio} rel="author">{author.portfolio.replace('https://', '')}</a>.</p>
 
     <h2>Why client-side</h2>
-    <p>Most online tools upload your files to a server to process them. That costs money per file, which is why they cap free tiers — 5&nbsp;MB here, 40 files there. ToolShelf runs the processing on your own device instead. That flips the economics: there's no per-file cost, so there's no reason to limit you, and your files never leave your hands.</p>
+    <p>Most online tools upload your files to a server to process them. That costs money per file, which is why they cap free tiers — 5&nbsp;MB here, 40 files there. ToolShelf runs the processing on your own device instead. That flips the economics: there is no per-file cost, so there is no reason to limit you, and your files never leave your hands.</p>
 
     <h2>How it stays free</h2>
     <p>The site is static and cheap to host. Later, we may show ads below the tools and their results — never above, never as pop-ups. What we will never do is upload your files or sell your data. The permanent promise is simple: your files stay on your device.</p>
@@ -46,6 +82,17 @@ const author = {
   .lead { font-size: var(--t-sub); margin-top: 1.25rem; }
   .about h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 0.75rem; }
   .about p { color: var(--ink); }
+  .author-card {
+    display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;
+    background: var(--card); border: 1px solid var(--hairline); border-radius: var(--radius);
+    box-shadow: var(--shadow-card); padding: 1.5rem; margin-top: 2rem;
+  }
+  .a-name { font-weight: 600; font-size: 1.25rem; }
+  .a-role { color: var(--dim); font-size: var(--t-small); margin-top: 0.25rem; }
+  .a-loc { color: var(--dim); font-size: var(--t-small); }
+  .a-links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .a-links .action { font-size: var(--t-small); }
   .creds { color: var(--dim); padding-left: 1.25rem; }
-  .creds li { margin-bottom: 0.4rem; }
+  .creds li { margin-bottom: 0.5rem; }
+  .proj-links { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 1rem; }
 </style>

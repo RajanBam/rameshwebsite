@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="ToolShelf">
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <rect x="0" y="0" width="1200" height="630" fill="#f5f5f7"/>
+  <g transform="translate(96,150)">
+    <rect x="0" y="0" width="64" height="64" rx="15" fill="#1d1d1f"/>
+    <path d="M18 22h28M32 22v24" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="48" cy="18" r="6" fill="#008a5c"/>
+    <text x="84" y="46" font-family="Inter,sans-serif" font-size="40" font-weight="600" fill="#1d1d1f">ToolShelf</text>
+  </g>
+  <text x="96" y="360" font-family="Inter,sans-serif" font-size="86" font-weight="700" fill="#1d1d1f" letter-spacing="-2">Tools that keep</text>
+  <text x="96" y="452" font-family="Inter,sans-serif" font-size="86" font-weight="700" fill="#1d1d1f" letter-spacing="-2">your files.</text>
+  <text x="96" y="530" font-family="Inter,sans-serif" font-size="34" fill="#6e6e73">Unlimited files. Nothing uploaded. Works offline.</text>
+  <g transform="translate(96,556)">
+    <circle cx="8" cy="6" r="7" fill="#008a5c"/>
+    <text x="24" y="13" font-family="'Geist Mono',monospace" font-size="24" fill="#008a5c">0 B uploaded</text>
+  </g>
+</svg>

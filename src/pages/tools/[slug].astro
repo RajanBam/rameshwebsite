@@ -4,7 +4,13 @@ import { IMPLEMENTED_TOOLS, getTool } from '../../lib/registry';
 
 // Only implemented tools get a page — no thin "coming soon" URLs.
 import PdfMerge from '../../components/tools/PdfMerge.tsx';
+import PdfSplit from '../../components/tools/PdfSplit.tsx';
+import PdfImage from '../../components/tools/PdfImage.tsx';
 import ImageCompress from '../../components/tools/ImageCompress.tsx';
+import ImageConvert from '../../components/tools/ImageConvert.tsx';
+import HeicToJpg from '../../components/tools/HeicToJpg.tsx';
+import NepalIncomeTax from '../../components/tools/NepalIncomeTax.tsx';
+import EmiCalculator from '../../components/tools/EmiCalculator.tsx';
 import JsonFormatter from '../../components/tools/JsonFormatter.tsx';
 import QrGenerator from '../../components/tools/QrGenerator.tsx';
 
@@ -20,7 +26,13 @@ const tool = getTool(slug!)!;
 
 <ToolShell tool={tool}>
   {tool.component === 'PdfMerge' && <PdfMerge client:load />}
+  {tool.component === 'PdfSplit' && <PdfSplit client:load />}
+  {tool.component === 'PdfImage' && <PdfImage client:load />}
   {tool.component === 'ImageCompress' && <ImageCompress client:only="preact" />}
+  {tool.component === 'ImageConvert' && <ImageConvert client:only="preact" />}
+  {tool.component === 'HeicToJpg' && <HeicToJpg client:load />}
+  {tool.component === 'NepalIncomeTax' && <NepalIncomeTax client:load />}
+  {tool.component === 'EmiCalculator' && <EmiCalculator client:load />}
   {tool.component === 'JsonFormatter' && <JsonFormatter client:load />}
   {tool.component === 'QrGenerator' && <QrGenerator client:load />}
 </ToolShell>

@@ -15,7 +15,9 @@
     "@fontsource/inter": "^5.1.0",
     "astro": "^4.16.18",
     "fflate": "^0.8.3",
+    "heic2any": "^0.0.4",
     "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.10.38",
     "preact": "^10.25.4",
     "qrcode": "^1.5.4"
   },

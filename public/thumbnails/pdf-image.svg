@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="PDF and Image">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef4fe"/><stop offset="1" stop-color="#dce8fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="240" rx="24" fill="url(#bg)"/>
+  <rect x="58" y="74" width="66" height="86" rx="8" fill="#fff" stroke="#c7d8f0"/>
+  <text x="91" y="124" font-family="'Geist Mono',monospace" font-size="13" fill="#0066cc" text-anchor="middle">PDF</text>
+  <rect x="196" y="74" width="66" height="86" rx="8" fill="#fff" stroke="#c7d8f0"/>
+  <circle cx="216" cy="98" r="7" fill="#f5b301"/>
+  <path d="M202 152 L224 122 L238 140 L246 132 L256 152 Z" fill="#0066cc" opacity="0.85"/>
+  <path d="M138 108 h44 m-10 -8 l10 8 l-10 8" fill="none" stroke="#0066cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M182 132 h-44 m10 -8 l-10 8 l10 8" fill="none" stroke="#0066cc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
