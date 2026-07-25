@@ -4,9 +4,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/copy-ffmpeg.mjs",
     "dev": "astro dev",
     "prebuild": "node scripts/copy-ffmpeg.mjs",
     "build": "astro build",
+    "postinstall": "node scripts/copy-ffmpeg.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
