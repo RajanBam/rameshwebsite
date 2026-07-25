@@ -53,7 +53,7 @@ export default function NepalIncomeTax() {
 
       <label class="check">
         <input type="checkbox" checked={ssfMember} onChange={(e) => setSsfMember((e.target as HTMLInputElement).checked)} />
-        I contribute to the Social Security Fund (SSF) — waives the 1% social security tax
+        I contribute to the Social Security Fund (SSF), which waives the 1% social security tax
       </label>
 
       <div class="result-head">

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+const updated = 'July 2025';
+---
+
+<BaseLayout
+  title={`Cookie Policy | ${SITE.name}`}
+  description={`How ${SITE.name} uses cookies. The tools work without them; cookies are only used for optional analytics and advertising.`}
+  keywords={['cookie policy', 'cookies', SITE.name.toLowerCase()]}
+>
+  <section class="container prose">
+    <h1>Cookie Policy</h1>
+    <p class="updated">Last updated: {updated}</p>
+    <p class="lead">The tools on {SITE.name} work without cookies. Cookies are only involved in optional analytics and advertising, explained here.</p>
+
+    <h2>What cookies are</h2>
+    <p>Cookies are small text files a website can store in your browser. They are widely used to make sites work, to remember preferences, and to measure or personalise advertising.</p>
+
+    <h2>How we use cookies</h2>
+    <ul>
+      <li><strong>Essential:</strong> the tools themselves need no cookies to function. They run in your browser.</li>
+      <li><strong>Analytics:</strong> we may use privacy-respecting analytics to see which tools are popular, in aggregate and without identifying you.</li>
+      <li><strong>Advertising:</strong> if ads are shown, third-party vendors such as Google may set cookies to serve and measure ads. See our <a href="/privacy-policy/">Privacy Policy</a> for details.</li>
+    </ul>
+
+    <h2>Managing cookies</h2>
+    <p>You can block or delete cookies at any time in your browser settings. Doing so does not stop the tools from working, because they do not depend on cookies. To manage advertising cookies specifically, visit <a href="https://www.google.com/settings/ads" rel="nofollow">Google Ads Settings</a> or <a href="https://www.aboutads.info/choices/" rel="nofollow">aboutads.info</a>.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about cookies can be sent to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+  </section>
+</BaseLayout>

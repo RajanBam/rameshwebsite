@@ -159,3 +159,50 @@
   background: #fff;
   color: var(--ink);
 }
+
+/* Green circular progress ring — shown while a tool does real work. */
+:root { --ring-track: rgba(0, 138, 92, 0.14); }
+.ring-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.5rem 0 0.5rem;
+}
+.ring { position: relative; display: grid; place-items: center; }
+.ring-fill { transition: stroke-dashoffset 0.35s var(--ease); }
+.ring-center { position: absolute; inset: 0; display: grid; place-items: center; }
+.ring-pct { font-size: 1.75rem; font-weight: 500; color: var(--ink); }
+.ring-pct i { font-size: 0.9rem; font-style: normal; color: var(--dim); margin-left: 1px; }
+.ring-check {
+  font-size: 2.25rem;
+  color: var(--green);
+  line-height: 1;
+  animation: ring-pop 0.3s var(--ease);
+}
+@keyframes ring-pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ring-label { font-weight: 500; color: var(--ink); font-size: var(--t-small); }
+.ring-label.is-done { color: var(--green); }
+.ring-sub { color: var(--dim); font-size: var(--t-small); font-variant-numeric: tabular-nums; }
+
+/* Range input, tinted to the system blue */
+input[type='range'] { accent-color: var(--blue); }
+
+/* Compact two-column field grid used by newer tools */
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+.result-box {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: var(--gray);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+.copy-line { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }

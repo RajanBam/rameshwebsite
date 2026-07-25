@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { SITE } from '../lib/site';
 
 export interface Props {
   title: string;
@@ -16,7 +17,7 @@ export interface Props {
 const { title, description, keywords = [], image = '/thumbnails/og-default.svg', jsonLd = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 const ogImage = new URL(image, Astro.site ?? Astro.url.origin).href;
-const siteName = 'ToolShelf'; // working name — change once decided
+const siteName = SITE.name;
 ---
 
 <!doctype html>
@@ -46,12 +47,14 @@ const siteName = 'ToolShelf'; // working name — change once decided
     <meta name="twitter:image" content={ogImage} />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     {jsonLd.map((obj) => (
       <script type="application/ld+json" set:html={JSON.stringify(obj)} />
     ))}
   </head>
   <body>
+    <a href="#main" class="skip-link">Skip to content</a>
     <Nav />
     <main id="main">
       <slot />

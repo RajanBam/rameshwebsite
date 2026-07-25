@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { TOOLS } from '../lib/registry';
+import { SITE } from '../lib/site';
 
 const jsonLd = [{
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'ToolShelf',
+  name: SITE.name,
   description: 'Free tools that run 100% in your browser. Unlimited files, nothing uploaded.',
   url: Astro.site?.href,
 }];
@@ -14,8 +15,8 @@ const live = TOOLS.filter((t) => t.component);
 ---
 
 <BaseLayout
-  title="ToolShelf — free tools that never upload your files"
-  description="PDF, image and finance tools that run 100% in your browser. Unlimited files, unlimited size, nothing uploaded, works offline."
+  title={`${SITE.name}: free tools that never upload your files`}
+  description="PDF, image, text and finance tools that run 100% in your browser. Unlimited files, unlimited size, nothing uploaded, works offline."
   keywords={['free online tools', 'client-side tools', 'merge pdf', 'compress images', 'privacy tools']}
   jsonLd={jsonLd}
 >
@@ -71,7 +72,7 @@ const live = TOOLS.filter((t) => t.component);
     <div class="container stage-inner">
       <div class="stage-copy">
         <h2>Answers as<br />you type.</h2>
-        <p class="sub">Income tax, EMIs and more — instant, precise, and never sent anywhere.</p>
+        <p class="sub">Income tax, EMIs and more. Instant, precise, and never sent anywhere.</p>
         <div class="links">
           <a class="action" href="/tools/">See calculators</a>
         </div>
@@ -86,7 +87,7 @@ const live = TOOLS.filter((t) => t.component);
   <section class="stage stage-white">
     <div class="container stage-inner center">
       <h2 class="statement">It even works<br />with the Wi-Fi off.</h2>
-      <p class="sub">There's no server to reach. Turn off your connection and try — everything still runs.</p>
+      <p class="sub">There's no server to reach. Turn off your connection and try. Everything still runs.</p>
       <a class="action" href="/privacy/">Don't trust us. Verify it.</a>
     </div>
   </section>

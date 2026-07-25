@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+---
+
+<BaseLayout
+  title={`Page not found | ${SITE.name}`}
+  description="That page could not be found. Browse all tools instead."
+>
+  <section class="container center notfound">
+    <p class="code mono">404</p>
+    <h1>This page took a wrong turn.</h1>
+    <p class="sub">The page you were looking for is not here. Everything still runs in your browser, though.</p>
+    <div class="links">
+      <a class="action" href="/tools/">Browse all tools</a>
+      <a class="action" href="/">Go home</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    max-width: 620px;
+    text-align: center;
+    padding-block: clamp(4rem, 14vw, 8rem);
+  }
+  .code { color: var(--dim); font-size: 1rem; letter-spacing: 0.2em; }
+  .notfound h1 { font-size: var(--t-stage); margin-top: 0.75rem; }
+  .notfound .sub { color: var(--dim); font-size: var(--t-sub); margin-top: 1rem; }
+  .links { display: flex; gap: 1.75rem; justify-content: center; margin-top: 1.75rem; flex-wrap: wrap; }
+</style>

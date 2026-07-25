@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+
+const contactLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: `Contact ${SITE.name}`,
+  url: `${SITE.domain}/contact/`,
+};
+---
+
+<BaseLayout
+  title={`Contact | ${SITE.name}`}
+  description={`Get in touch with ${SITE.name}. Report a bug, suggest a tool, or ask a question.`}
+  keywords={['contact', SITE.name.toLowerCase(), 'suggest a tool']}
+  jsonLd={[contactLd]}
+>
+  <section class="container prose">
+    <h1>Contact</h1>
+    <p class="lead">Found a bug, want a new tool, or have a question? We would like to hear from you.</p>
+
+    <h2>Email</h2>
+    <p>The best way to reach us is by email at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We read every message.</p>
+
+    <h2>Suggest a tool</h2>
+    <p>{SITE.name} grows from real requests. If there is a tool you keep wishing existed, and it could run entirely in the browser, tell us. Popular requests get built first.</p>
+
+    <h2>Report an issue</h2>
+    <p>If a tool did not behave as expected, let us know the file type and what you were trying to do. Since your files never leave your device, we cannot see them, so a short description helps us reproduce the problem.</p>
+
+    <h2>About the maker</h2>
+    <p>{SITE.name} is built by Ramesh Kadariya, a developer based in Nepal. You can read more on the <a href="/about/">About page</a>.</p>
+  </section>
+</BaseLayout>

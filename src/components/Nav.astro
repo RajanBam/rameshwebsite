@@ -1,6 +1,7 @@
 ---
-// Thin (48px), blurred, sticky nav — apple.com style.
+// Thin (48px), blurred, sticky nav.
 // Carries the quiet green "0 B uploaded" trust mark.
+import { SITE } from '../lib/site';
 const links = [
   { href: '/tools/', label: 'All Tools' },
   { href: '/privacy/', label: 'Privacy' },
@@ -10,7 +11,7 @@ const links = [
 
 <header class="nav">
   <div class="nav-inner">
-    <a href="/" class="brand">ToolShelf</a>
+    <a href="/" class="brand">{SITE.name}</a>
     <nav class="nav-links" aria-label="Primary">
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
     </nav>

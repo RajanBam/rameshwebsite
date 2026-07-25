@@ -1,5 +1,6 @@
 ---
 import { CATEGORIES, toolsByCategory, type Category } from '../lib/registry';
+import { SITE } from '../lib/site';
 const cats = Object.keys(CATEGORIES) as Category[];
 const year = new Date().getFullYear();
 ---
@@ -7,7 +8,7 @@ const year = new Date().getFullYear();
 <footer class="footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <span class="brand">ToolShelf</span>
+      <span class="brand">{SITE.name}</span>
       <p class="tagline">Fast tools that run in your browser.<br />Your files never leave your device.</p>
       <span class="trust"><span class="dot"></span>0&nbsp;B uploaded</span>
     </div>
@@ -23,13 +24,31 @@ const year = new Date().getFullYear();
         </div>
       );
     })}
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+        <li><a href="/privacy/">Privacy promise</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="/privacy-policy/">Privacy Policy</a></li>
+        <li><a href="/terms/">Terms of Use</a></li>
+        <li><a href="/cookies/">Cookie Policy</a></li>
+        <li><a href="/disclaimer/">Disclaimer</a></li>
+      </ul>
+    </div>
   </div>
   <div class="container footer-legal">
-    <span>© {year} ToolShelf</span>
+    <span>© {year} {SITE.name}</span>
     <nav>
       <a href="/tools/">All Tools</a>
-      <a href="/privacy/">Privacy</a>
-      <a href="/about/">About</a>
+      <a href="/privacy-policy/">Privacy Policy</a>
+      <a href="/terms/">Terms</a>
+      <a href="/contact/">Contact</a>
     </nav>
   </div>
 </footer>

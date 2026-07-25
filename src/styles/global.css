@@ -94,6 +94,33 @@ button {
   background: var(--green);
 }
 
+/* Long-form / legal pages */
+.prose {
+  max-width: 760px;
+  padding-top: clamp(3rem, 8vw, 5rem);
+}
+.prose h1 { font-size: var(--t-title); }
+.prose .updated { color: var(--dim); font-size: var(--t-small); margin-top: 0.75rem; }
+.prose .lead { font-size: var(--t-sub); margin-top: 1.25rem; color: var(--ink); }
+.prose h2 { font-size: 1.4rem; margin-top: 2.5rem; margin-bottom: 0.75rem; }
+.prose p, .prose li { color: var(--ink); }
+.prose ul { padding-left: 1.25rem; }
+.prose li { margin-bottom: 0.5rem; }
+
+/* Skip-to-content link (a11y) */
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -3rem;
+  background: var(--ink);
+  color: #fff;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  z-index: 200;
+  transition: top 0.15s var(--ease);
+}
+.skip-link:focus { top: 0.5rem; text-decoration: none; }
+
 /* Accessibility */
 .visually-hidden {
   position: absolute; width: 1px; height: 1px;

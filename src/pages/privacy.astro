@@ -1,22 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
 ---
 
 <BaseLayout
-  title="Privacy — don't trust us, verify it | ToolShelf"
-  description="ToolShelf runs entirely in your browser. Your files are never uploaded. Here are three ways to prove it yourself."
+  title={`Privacy: don't trust us, verify it | ${SITE.name}`}
+  description={`${SITE.name} runs entirely in your browser. Your files are never uploaded. Here are three ways to prove it yourself.`}
   keywords={['privacy tools', 'no upload', 'client-side processing', 'offline tools']}
 >
   <section class="p-hero container center">
     <h1>Don't trust us.<br />Verify it.</h1>
-    <p class="sub">Every tool here runs inside your browser tab. Your files are never sent to a server — not ours, not anyone's. You don't have to take our word for it. Check it yourself, three ways.</p>
+    <p class="sub">Every tool here runs inside your browser tab. Your files are never sent to a server, not ours and not anyone's. You don't have to take our word for it. Check it yourself, three ways.</p>
   </section>
 
   <section class="container cards">
     <div class="verify-card">
       <span class="vc-num mono">01</span>
       <h2>Watch the Network tab</h2>
-      <p>Open your browser's developer tools, go to the Network tab, and use any tool. You'll see no upload request for your files — because there isn't one.</p>
+      <p>Open your browser's developer tools, go to the Network tab, and use any tool. You'll see no upload request for your files, because there isn't one.</p>
     </div>
     <div class="verify-card">
       <span class="vc-num mono">02</span>
@@ -26,7 +27,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="verify-card">
       <span class="vc-num mono">03</span>
       <h2>Read the source</h2>
-      <p>The processing code ships to your browser in plain sight. Inspect it, or read the project — there's no server step to hide.</p>
+      <p>The processing code ships to your browser in plain sight. Inspect it, or read the project. There's no server step to hide.</p>
     </div>
   </section>
 

@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { TOOLS, CATEGORIES, type Category } from '../../lib/registry';
+import { SITE } from '../../lib/site';
 const cats = Object.keys(CATEGORIES) as Category[];
 ---
 
 <BaseLayout
-  title="All Tools — free, private, in your browser | ToolShelf"
-  description="Every ToolShelf tool: PDF, image, finance and developer utilities that run 100% in your browser. Unlimited files, nothing uploaded, no sign-up."
+  title={`All Tools: free, private, in your browser | ${SITE.name}`}
+  description="Every tool for PDF, image, text, finance and developer work that runs 100% in your browser. Unlimited files, nothing uploaded, no sign-up."
   keywords={['free online tools', 'browser tools', 'privacy tools', 'no upload tools']}
 >
   <section class="index-hero container">
