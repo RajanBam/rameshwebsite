@@ -1,9 +1,10 @@
 import { defineConfig } from 'astro/config';
 import preact from '@astrojs/preact';
+import { SITE } from './src/lib/site.ts';
 
-// Update `site` to the production domain once the name/domain is chosen.
+// The production origin lives in src/lib/site.ts (single source of truth).
 export default defineConfig({
-  site: 'https://tools.example.com',
+  site: SITE.domain,
   output: 'static',
   integrations: [preact()],
   build: {

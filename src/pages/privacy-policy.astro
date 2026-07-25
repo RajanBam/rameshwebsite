@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+const updated = 'July 2025';
+---
+
+<BaseLayout
+  title={`Privacy Policy | ${SITE.name}`}
+  description={`How ${SITE.name} handles data. In short: your files are processed in your browser and never uploaded. This policy explains cookies, advertising and your rights in full.`}
+  keywords={['privacy policy', 'data protection', SITE.name.toLowerCase()]}
+>
+  <section class="container prose">
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: {updated}</p>
+    <p class="lead">{SITE.name} is built so that your files never leave your device. The tools process everything locally in your browser. This policy explains what that means, and covers cookies and advertising for completeness.</p>
+
+    <h2>The files you process</h2>
+    <p>Every tool on {SITE.name}, including the PDF, image, text and calculator tools, runs entirely inside your browser tab. The documents, photos and text you work with are never uploaded, stored or transmitted to us or to anyone else. We never see them, and we could not retrieve them even if asked.</p>
+
+    <h2>Information we collect</h2>
+    <p>We do not ask you to create an account, and we do not collect personal information such as your name, email or address unless you choose to send it to us by email. We may collect limited, non-identifying technical data through analytics and advertising, as described below.</p>
+
+    <h2>Cookies and analytics</h2>
+    <p>We may use privacy-respecting analytics to understand which tools are used and how the site performs, in aggregate. If cookies are used for this, they do not identify you personally. You can block or delete cookies in your browser settings at any time. See our <a href="/cookies/">Cookie Policy</a> for details.</p>
+
+    <h2>Advertising</h2>
+    <p>To keep the tools free, {SITE.name} may display advertising, including ads served by Google. Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this and other websites.</p>
+    <ul>
+      <li>Google's use of advertising cookies enables it and its partners to serve ads based on your visits to this site and other sites on the internet.</li>
+      <li>You can opt out of personalised advertising by visiting <a href="https://www.google.com/settings/ads" rel="nofollow">Google Ads Settings</a>.</li>
+      <li>You can also opt out of a third-party vendor's use of cookies for personalised advertising at <a href="https://www.aboutads.info/choices/" rel="nofollow">aboutads.info</a>.</li>
+    </ul>
+    <p>Advertising never changes the core promise: ads run below the tools, and your files are still processed only on your device.</p>
+
+    <h2>Data security</h2>
+    <p>Because your files are processed locally and never uploaded, there is no server-side copy of your data to secure or breach. The site is served over HTTPS.</p>
+
+    <h2>Children's privacy</h2>
+    <p>{SITE.name} is a general-audience utility site and is not directed at children under 13. We do not knowingly collect personal information from children.</p>
+
+    <h2>Your rights</h2>
+    <p>Depending on where you live, you may have rights over any personal data a website holds about you. Since we do not maintain accounts or personal profiles, there is generally nothing for us to retrieve, correct or delete. For any question, contact us using the details below.</p>
+
+    <h2>Changes to this policy</h2>
+    <p>We may update this policy as the site evolves. Material changes will be reflected by the date at the top of this page.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about this policy can be sent to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>, or through our <a href="/contact/">contact page</a>.</p>
+  </section>
+</BaseLayout>

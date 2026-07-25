@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+const updated = 'July 2025';
+---
+
+<BaseLayout
+  title={`Disclaimer | ${SITE.name}`}
+  description={`General information disclaimer for ${SITE.name}. Calculator results are estimates, not professional advice.`}
+  keywords={['disclaimer', SITE.name.toLowerCase()]}
+>
+  <section class="container prose">
+    <h1>Disclaimer</h1>
+    <p class="updated">Last updated: {updated}</p>
+    <p class="lead">The information and tools on {SITE.name} are provided for general use. Please read this disclaimer before relying on any result.</p>
+
+    <h2>General information</h2>
+    <p>The tools and content on this site are provided in good faith and for general informational purposes only. We make no guarantee of completeness, accuracy or suitability for a particular purpose.</p>
+
+    <h2>Calculators are estimates</h2>
+    <p>Financial tools, including the tax and loan calculators, produce estimates based on the figures and rules available at the time. They are not financial, tax or legal advice. Confirm any important figure with a qualified professional before acting on it.</p>
+
+    <h2>Your files and results</h2>
+    <p>You are responsible for checking that a tool produced the result you expected. Because processing happens on your device and originals are never uploaded, always keep a copy of any important file before using a tool on it.</p>
+
+    <h2>External links</h2>
+    <p>This site may link to external websites that are not under our control. We are not responsible for the content or practices of those sites.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about this disclaimer can be sent to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+  </section>
+</BaseLayout>

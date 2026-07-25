@@ -2,17 +2,31 @@
 import ToolShell from '../../layouts/ToolShell.astro';
 import { IMPLEMENTED_TOOLS, getTool } from '../../lib/registry';
 
-// Only implemented tools get a page — no thin "coming soon" URLs.
+// Only implemented tools get a page, no thin "coming soon" URLs.
 import PdfMerge from '../../components/tools/PdfMerge.tsx';
 import PdfSplit from '../../components/tools/PdfSplit.tsx';
 import PdfImage from '../../components/tools/PdfImage.tsx';
+import PdfCompress from '../../components/tools/PdfCompress.tsx';
 import ImageCompress from '../../components/tools/ImageCompress.tsx';
 import ImageConvert from '../../components/tools/ImageConvert.tsx';
+import ImageResize from '../../components/tools/ImageResize.tsx';
 import HeicToJpg from '../../components/tools/HeicToJpg.tsx';
 import NepalIncomeTax from '../../components/tools/NepalIncomeTax.tsx';
 import EmiCalculator from '../../components/tools/EmiCalculator.tsx';
 import JsonFormatter from '../../components/tools/JsonFormatter.tsx';
 import QrGenerator from '../../components/tools/QrGenerator.tsx';
+import Base64Tool from '../../components/tools/Base64Tool.tsx';
+import UrlEncoder from '../../components/tools/UrlEncoder.tsx';
+import HashGenerator from '../../components/tools/HashGenerator.tsx';
+import UuidGenerator from '../../components/tools/UuidGenerator.tsx';
+import PasswordGenerator from '../../components/tools/PasswordGenerator.tsx';
+import CsvJson from '../../components/tools/CsvJson.tsx';
+import TimestampConverter from '../../components/tools/TimestampConverter.tsx';
+import ColorPicker from '../../components/tools/ColorPicker.tsx';
+import WordCounter from '../../components/tools/WordCounter.tsx';
+import CaseConverter from '../../components/tools/CaseConverter.tsx';
+import LoremIpsum from '../../components/tools/LoremIpsum.tsx';
+import TextDiff from '../../components/tools/TextDiff.tsx';
 
 export function getStaticPaths() {
   return IMPLEMENTED_TOOLS.map((t) => ({ params: { slug: t.slug } }));
@@ -28,11 +42,25 @@ const tool = getTool(slug!)!;
   {tool.component === 'PdfMerge' && <PdfMerge client:load />}
   {tool.component === 'PdfSplit' && <PdfSplit client:load />}
   {tool.component === 'PdfImage' && <PdfImage client:load />}
+  {tool.component === 'PdfCompress' && <PdfCompress client:only="preact" />}
   {tool.component === 'ImageCompress' && <ImageCompress client:only="preact" />}
   {tool.component === 'ImageConvert' && <ImageConvert client:only="preact" />}
+  {tool.component === 'ImageResize' && <ImageResize client:only="preact" />}
   {tool.component === 'HeicToJpg' && <HeicToJpg client:load />}
   {tool.component === 'NepalIncomeTax' && <NepalIncomeTax client:load />}
   {tool.component === 'EmiCalculator' && <EmiCalculator client:load />}
   {tool.component === 'JsonFormatter' && <JsonFormatter client:load />}
   {tool.component === 'QrGenerator' && <QrGenerator client:load />}
+  {tool.component === 'Base64Tool' && <Base64Tool client:load />}
+  {tool.component === 'UrlEncoder' && <UrlEncoder client:load />}
+  {tool.component === 'HashGenerator' && <HashGenerator client:load />}
+  {tool.component === 'UuidGenerator' && <UuidGenerator client:only="preact" />}
+  {tool.component === 'PasswordGenerator' && <PasswordGenerator client:only="preact" />}
+  {tool.component === 'CsvJson' && <CsvJson client:load />}
+  {tool.component === 'TimestampConverter' && <TimestampConverter client:only="preact" />}
+  {tool.component === 'ColorPicker' && <ColorPicker client:load />}
+  {tool.component === 'WordCounter' && <WordCounter client:load />}
+  {tool.component === 'CaseConverter' && <CaseConverter client:load />}
+  {tool.component === 'LoremIpsum' && <LoremIpsum client:only="preact" />}
+  {tool.component === 'TextDiff' && <TextDiff client:load />}
 </ToolShell>

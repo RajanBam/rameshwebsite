@@ -1,10 +1,14 @@
 import type { APIRoute } from 'astro';
 import { IMPLEMENTED_TOOLS } from '../lib/registry';
+import { SITE } from '../lib/site';
 
-// Registry-driven sitemap — stays in sync as tools are added.
+// Registry-driven sitemap. Stays in sync as tools are added.
 export const GET: APIRoute = ({ site }) => {
-  const base = (site?.href ?? 'https://tools.example.com/').replace(/\/$/, '');
-  const staticPaths = ['/', '/tools/', '/privacy/', '/about/'];
+  const base = (site?.href ?? `${SITE.domain}/`).replace(/\/$/, '');
+  const staticPaths = [
+    '/', '/tools/', '/privacy/', '/about/', '/contact/',
+    '/privacy-policy/', '/terms/', '/cookies/', '/disclaimer/',
+  ];
   const toolPaths = IMPLEMENTED_TOOLS.map((t) => `/tools/${t.slug}/`);
   const urls = [...staticPaths, ...toolPaths];
 

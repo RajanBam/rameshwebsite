@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+const updated = 'July 2025';
+---
+
+<BaseLayout
+  title={`Terms of Use | ${SITE.name}`}
+  description={`The terms for using ${SITE.name}. The tools are provided free, as-is, and run entirely in your browser.`}
+  keywords={['terms of use', 'terms of service', SITE.name.toLowerCase()]}
+>
+  <section class="container prose">
+    <h1>Terms of Use</h1>
+    <p class="updated">Last updated: {updated}</p>
+    <p class="lead">By using {SITE.name}, you agree to these terms. They are intentionally short and plain.</p>
+
+    <h2>The service</h2>
+    <p>{SITE.name} provides free online tools that run in your web browser. The tools process your files on your own device. We do not host, store or receive the files you work with.</p>
+
+    <h2>Acceptable use</h2>
+    <p>You agree to use the tools lawfully and not to use them to process content you do not have the right to process. You are responsible for the files and data you use with the tools and for keeping your own backups of important files.</p>
+
+    <h2>No warranty</h2>
+    <p>The tools are provided "as is" and "as available", without warranties of any kind, whether express or implied. We do not guarantee that every tool will be error-free, uninterrupted, or produce a specific result for your particular file. Always keep the original of any important document.</p>
+
+    <h2>Limitation of liability</h2>
+    <p>To the fullest extent permitted by law, {SITE.name} and its author are not liable for any loss or damage, including lost data or lost profits, arising from your use of, or inability to use, the tools.</p>
+
+    <h2>Intellectual property</h2>
+    <p>The {SITE.name} name, design and site content are owned by their author. The output you create with the tools from your own files belongs to you.</p>
+
+    <h2>Third-party services</h2>
+    <p>The site may include third-party services such as advertising. Those services are governed by their own terms and privacy policies.</p>
+
+    <h2>Changes</h2>
+    <p>We may update these terms as the site evolves. Continued use of the site after a change means you accept the updated terms.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about these terms can be sent to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+  </section>
+</BaseLayout>

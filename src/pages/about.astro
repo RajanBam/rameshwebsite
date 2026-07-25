@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
 
 // Real author details (E-E-A-T trust signal). Add the direct app/extension
-// deep-links to `projects` whenever you have them — the portfolio link below
+// deep-links to `projects` whenever you have them. The portfolio link below
 // is the authoritative source that lists them all.
 const author = {
   name: 'Ramesh Kadariya',
@@ -12,7 +13,7 @@ const author = {
   email: 'contact@rameshkadariya.com.np',
   github: 'https://github.com/RameshKadariya',
   credentials: [
-    'BSc (Hons) Computer Systems Engineering — First Class (ISMT College / University of Sunderland)',
+    'BSc (Hons) Computer Systems Engineering, First Class (ISMT College / University of Sunderland)',
     '3 published Android apps on the Google Play Store',
     '2 published Chrome Web Store extensions',
     '6 augmented-reality camera filters (Lens Studio, Effect House)',
@@ -34,14 +35,14 @@ const personLd = {
 ---
 
 <BaseLayout
-  title="About ToolShelf — built by Ramesh Kadariya"
-  description="ToolShelf is a growing set of free tools that run entirely in your browser, built by Ramesh Kadariya — a Nepal-based developer with published apps, extensions and research."
-  keywords={['about toolshelf', 'ramesh kadariya', 'client-side tools', 'indie developer nepal']}
+  title={`About ${SITE.name}: built by Ramesh Kadariya`}
+  description={`${SITE.name} is a growing set of free tools that run entirely in your browser, built by Ramesh Kadariya, a Nepal-based developer with published apps, extensions and research.`}
+  keywords={['about ' + SITE.name.toLowerCase(), 'ramesh kadariya', 'client-side tools', 'indie developer nepal']}
   jsonLd={[personLd]}
 >
   <section class="container about">
     <h1>Built by someone who ships.</h1>
-    <p class="lead">ToolShelf is a growing collection of free tools that do their work entirely inside your browser. No uploads, no accounts, no limits imposed to save server costs — because there is no server in the loop.</p>
+    <p class="lead">{SITE.name} is a growing collection of free tools that do their work entirely inside your browser. No uploads, no accounts, and no limits imposed to save server costs, because there is no server in the loop.</p>
 
     <div class="author-card">
       <div>
@@ -57,7 +58,7 @@ const personLd = {
     </div>
 
     <h2>Track record</h2>
-    <p>ToolShelf is built and maintained by a developer with a history of shipping real products used by real people:</p>
+    <p>{SITE.name} is built and maintained by a developer with a history of shipping real products used by real people:</p>
     <ul class="creds">
       {author.credentials.map((c) => <li>{c}</li>)}
     </ul>
@@ -66,13 +67,13 @@ const personLd = {
         {author.projects.map((p) => <li><a class="action" href={p.url}>{p.label}</a></li>)}
       </ul>
     )}
-    <p>You can see the full body of work — apps, extensions and AR filters — on <a href={author.portfolio} rel="author">{author.portfolio.replace('https://', '')}</a>.</p>
+    <p>You can see the full body of work, including apps, extensions and AR filters, on <a href={author.portfolio} rel="author">{author.portfolio.replace('https://', '')}</a>.</p>
 
     <h2>Why client-side</h2>
-    <p>Most online tools upload your files to a server to process them. That costs money per file, which is why they cap free tiers — 5&nbsp;MB here, 40 files there. ToolShelf runs the processing on your own device instead. That flips the economics: there is no per-file cost, so there is no reason to limit you, and your files never leave your hands.</p>
+    <p>Most online tools upload your files to a server to process them. That costs money per file, which is why they cap free tiers at 5&nbsp;MB here or 40 files there. {SITE.name} runs the processing on your own device instead. That flips the economics: there is no per-file cost, so there is no reason to limit you, and your files never leave your hands.</p>
 
     <h2>How it stays free</h2>
-    <p>The site is static and cheap to host. Later, we may show ads below the tools and their results — never above, never as pop-ups. What we will never do is upload your files or sell your data. The permanent promise is simple: your files stay on your device.</p>
+    <p>The site is static and cheap to host. Later, we may show ads below the tools and their results, never above and never as pop-ups. What we will never do is upload your files or sell your data. The permanent promise is simple: your files stay on your device.</p>
   </section>
 </BaseLayout>
 
