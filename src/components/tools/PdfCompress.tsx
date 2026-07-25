@@ -1,166 +1,138 @@
 import { useState, useRef } from 'preact/hooks';
 import { PDFDocument } from 'pdf-lib';
 import { downloadBlob, formatBytes } from '../../lib/format';
+import { runGhostscript, type GsSetting } from '../../lib/gs';
 import ProgressRing from '../ui/ProgressRing';
 
-/** PDF Compress.
- *  Two strategies, chosen intelligently per file:
- *  - Lossless: structural re-save (object streams, cleanup). Keeps exact
- *    quality. The real output size is computed up front and shown.
- *  - Raster levels: re-render pages as JPEG. Effective for scans and
- *    image-heavy PDFs. Every level's expected size is estimated from real
- *    sample renders BEFORE compressing, and any level that would make the
- *    file LARGER is disabled, never offered.
- *  Everything runs in the browser; nothing is uploaded. */
-const RASTER_LEVELS = {
-  extreme: { label: 'Extreme', hint: 'smallest file', scale: 1.3, quality: 0.3 },
-  strong: { label: 'Strong', hint: 'small, readable', scale: 1.5, quality: 0.5 },
-  balanced: { label: 'Balanced', hint: 'good quality', scale: 1.8, quality: 0.65 },
-  light: { label: 'Light', hint: 'near original', scale: 2.2, quality: 0.8 },
-} as const;
-type RasterLevel = keyof typeof RASTER_LEVELS;
-type Level = RasterLevel | 'lossless';
-const RASTER_KEYS = Object.keys(RASTER_LEVELS) as RasterLevel[];
-/** Rasterizing is impractical beyond this many pages (minutes of encode). */
-const MAX_RASTER_PAGES = 300;
-
-async function loadPdfjs() {
-  const pdfjs = await import('pdfjs-dist');
-  pdfjs.GlobalWorkerOptions.workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
-  return pdfjs;
-}
-
-async function renderPageJpeg(page: any, scale: number, quality: number): Promise<Blob> {
-  const viewport = page.getViewport({ scale });
-  const canvas = document.createElement('canvas');
-  canvas.width = viewport.width; canvas.height = viewport.height;
-  const ctx = canvas.getContext('2d')!;
-  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  await page.render({ canvasContext: ctx, viewport }).promise;
-  return new Promise((res) => canvas.toBlob((b) => res(b!), 'image/jpeg', quality));
-}
+/** PDF Compress, powered by a WebAssembly build of Ghostscript running in a
+ *  worker: the same class of engine the big PDF sites run on their servers,
+ *  except here the file never leaves the device.
+ *
+ *  On drop, the file is compressed at every quality level in the background,
+ *  so each option shows its REAL output size (not an estimate) before the
+ *  user chooses. Text stays selectable; embedded images are downsampled.
+ *  Any level that would enlarge the file is disabled, never offered. */
+const LEVELS: Record<string, { setting: GsSetting; label: string; hint: string }> = {
+  smallest: { setting: '/screen', label: 'Smallest', hint: 'images at 72 dpi' },
+  balanced: { setting: '/ebook', label: 'Balanced', hint: 'images at 150 dpi' },
+  high: { setting: '/printer', label: 'High quality', hint: 'images at 300 dpi' },
+};
+type Level = keyof typeof LEVELS;
+const LEVEL_KEYS = Object.keys(LEVELS) as Level[];
 
 export default function PdfCompress() {
   const [file, setFile] = useState<File | null>(null);
   const [level, setLevel] = useState<Level | null>(null);
   const [drag, setDrag] = useState(false);
   const [pages, setPages] = useState(0);
-  const [estimates, setEstimates] = useState<Partial<Record<RasterLevel, number>>>({});
-  const [losslessSize, setLosslessSize] = useState<number | null>(null);
+  const [sizes, setSizes] = useState<Partial<Record<Level, number>>>({});
+  const [failed, setFailed] = useState<Partial<Record<Level, boolean>>>({});
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState(-1);
   const [error, setError] = useState('');
   const [result, setResult] = useState<{ blob: Blob; before: number } | null>(null);
-  const docRef = useRef<any>(null);
-  const losslessRef = useRef<Uint8Array | null>(null);
+  const outputs = useRef<Partial<Record<Level, Uint8Array>>>({});
+  const jobId = useRef(0);
 
   const reset = () => {
-    setFile(null); setResult(null); setEstimates({}); setPages(0); setError('');
-    setLosslessSize(null); setLevel(null);
-    docRef.current = null; losslessRef.current = null;
+    jobId.current++;
+    setFile(null); setResult(null); setSizes({}); setFailed({}); setPages(0);
+    setError(''); setLevel(null); setProgress(-1); setAnalyzing(false);
+    outputs.current = {};
   };
 
   const add = async (list: FileList | File[]) => {
     const pdf = Array.from(list).find((f) => /pdf$/i.test(f.type) || /\.pdf$/i.test(f.name));
     if (!pdf) return;
     reset();
+    const job = ++jobId.current;
     setFile(pdf);
     setAnalyzing(true);
+    setProgress(0);
     try {
       const buf = await pdf.arrayBuffer();
 
-      // 1) Lossless structural re-save: the real size, computed up front.
-      let losslessOk = false;
+      // Page count (for progress) via pdf.js, quickly and locally.
+      let numPages = 0;
       try {
-        const doc = await PDFDocument.load(new Uint8Array(buf.slice(0)), { ignoreEncryption: true });
-        const bytes = await doc.save({ useObjectStreams: true });
-        losslessRef.current = bytes as Uint8Array;
-        setLosslessSize(bytes.length);
-        losslessOk = bytes.length < pdf.size;
-      } catch {
-        setLosslessSize(null);
+        const pdfjs = await import('pdfjs-dist');
+        pdfjs.GlobalWorkerOptions.workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
+        const doc = await pdfjs.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
+        numPages = doc.numPages;
+        if (job !== jobId.current) return;
+        setPages(numPages);
+        doc.destroy();
+      } catch { /* page count is cosmetic; continue without it */ }
+
+      // Compress at every level, smallest first, storing the real outputs.
+      const done: Partial<Record<Level, number>> = {};
+      const bad: Partial<Record<Level, boolean>> = {};
+      for (let i = 0; i < LEVEL_KEYS.length; i++) {
+        const key = LEVEL_KEYS[i];
+        if (job !== jobId.current) return;
+        try {
+          const out = await runGhostscript(buf, LEVELS[key].setting, (page) => {
+            if (job !== jobId.current || !numPages) return;
+            setProgress(Math.min(99, Math.round(((i + page / numPages) / LEVEL_KEYS.length) * 100)));
+          });
+          outputs.current[key] = out;
+          done[key] = out.length;
+        } catch {
+          bad[key] = true;
+        }
+        if (job !== jobId.current) return;
+        setSizes({ ...done });
+        setFailed({ ...bad });
+        setProgress(Math.min(99, Math.round(((i + 1) / LEVEL_KEYS.length) * 100)));
       }
 
-      // 2) Raster estimates from real sample renders (spread across the doc).
-      const pdfjs = await loadPdfjs();
-      const doc = await pdfjs.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
-      docRef.current = doc;
-      const n = doc.numPages;
-      setPages(n);
-      const est: Partial<Record<RasterLevel, number>> = {};
-      if (n <= MAX_RASTER_PAGES) {
-        const sampleIdx = [...new Set([1, Math.max(1, Math.ceil(n / 2)), n])].slice(0, 3);
-        const samples = await Promise.all(sampleIdx.map((i) => doc.getPage(i)));
-        for (const key of RASTER_KEYS) {
-          const { scale, quality } = RASTER_LEVELS[key];
-          let bytes = 0;
-          for (const page of samples) bytes += (await renderPageJpeg(page, scale, quality)).size;
-          est[key] = Math.round((bytes / samples.length) * n + n * 800 + 4000);
-          setEstimates({ ...est });
+      // Every level failed (corrupted/encrypted input): try a structural
+      // re-save so we still offer something when it helps.
+      if (Object.keys(done).length === 0) {
+        try {
+          const doc = await PDFDocument.load(new Uint8Array(buf.slice(0)), { ignoreEncryption: true });
+          const bytes = (await doc.save({ useObjectStreams: true })) as Uint8Array;
+          if (job !== jobId.current) return;
+          outputs.current.balanced = bytes;
+          done.balanced = bytes.length;
+          bad.balanced = false as any;
+          setSizes({ ...done }); setFailed({ ...bad });
+        } catch {
+          setError('This PDF could not be processed. It may be corrupted or password-protected.');
         }
       }
 
-      // 3) Pick the best default: smallest option that actually shrinks the file.
-      const usableRaster = RASTER_KEYS.filter((k) => est[k] != null && est[k]! < pdf.size && n <= MAX_RASTER_PAGES);
-      if (usableRaster.length > 0) setLevel(usableRaster.includes('strong') ? 'strong' : usableRaster[0]);
-      else if (losslessOk) setLevel('lossless');
-      else setLevel(null);
+      // Auto-select the best level that actually shrinks the file.
+      const shrinking = LEVEL_KEYS.filter((k) => done[k] != null && done[k]! < pdf.size);
+      setLevel(shrinking.includes('balanced') ? 'balanced' : shrinking[0] ?? null);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not read this PDF.');
     } finally {
-      setAnalyzing(false);
+      if (job === jobId.current) { setAnalyzing(false); setProgress(-1); }
     }
   };
 
-  const run = async () => {
+  // Outputs are computed during analysis, so compressing is instant.
+  const run = () => {
     if (!file || !level) return;
-    setError(''); setResult(null);
-    // Lossless output was already computed during analysis: instant.
-    if (level === 'lossless') {
-      if (!losslessRef.current) return;
-      setResult({ blob: new Blob([losslessRef.current as unknown as BlobPart], { type: 'application/pdf' }), before: file.size });
-      return;
-    }
-    if (!docRef.current) return;
-    setProgress(0);
-    try {
-      const { scale, quality } = RASTER_LEVELS[level];
-      const src = docRef.current;
-      const out = await PDFDocument.create();
-      for (let i = 1; i <= src.numPages; i++) {
-        const page = await src.getPage(i);
-        const jpg = await renderPageJpeg(page, scale, quality);
-        const img = await out.embedJpg(new Uint8Array(await jpg.arrayBuffer()));
-        const dims = page.getViewport({ scale: 1 });
-        const p = out.addPage([dims.width, dims.height]);
-        p.drawImage(img, { x: 0, y: 0, width: dims.width, height: dims.height });
-        setProgress(Math.round((i / src.numPages) * 100));
-      }
-      const bytes = await out.save();
-      setResult({ blob: new Blob([bytes as BlobPart], { type: 'application/pdf' }), before: file.size });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not compress this PDF.');
-    } finally {
-      setTimeout(() => setProgress(-1), 900);
-    }
+    const bytes = outputs.current[level];
+    if (!bytes) return;
+    setResult({ blob: new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' }), before: file.size });
   };
 
-  const busy = progress >= 0 && progress < 100;
   const saved = result ? Math.round((1 - result.blob.size / result.before) * 100) : 0;
   const pct = (n: number) => (file ? Math.round((1 - n / file.size) * 100) : 0);
-
-  const tooManyPages = pages > MAX_RASTER_PAGES;
-  const rasterDisabled = (k: RasterLevel) =>
-    tooManyPages || (estimates[k] != null && file != null && estimates[k]! >= file.size);
-  const losslessDisabled = losslessSize == null || (file != null && losslessSize >= file.size);
-  const allRasterOut = file != null && !analyzing &&
-    RASTER_KEYS.every((k) => rasterDisabled(k));
-  const nothingHelps = allRasterOut && losslessDisabled && !analyzing && file != null;
+  const nothingHelps = file != null && !analyzing && !error &&
+    LEVEL_KEYS.every((k) => sizes[k] == null || sizes[k]! >= file.size);
 
   return (
     <div class="tool-card">
-      {busy ? (
-        <ProgressRing value={progress} sublabel={`Rebuilding ${pages} pages`} />
+      {analyzing ? (
+        <ProgressRing
+          value={Math.max(0, progress)}
+          label="Compressing…"
+          sublabel={pages ? `${pages} pages · trying every quality level` : 'Trying every quality level'}
+        />
       ) : (
         <>
           <div class={`dropzone ${drag ? 'drag' : ''}`}
@@ -176,75 +148,55 @@ export default function PdfCompress() {
               onChange={(e) => { const t = e.target as HTMLInputElement; if (t.files) add(t.files); t.value = ''; }} />
           </div>
 
-          {file && (
+          {file && !error && (
             <div class="field" style="margin-top:1.25rem">
-              <label class="field-label">
-                Method {analyzing && <span style="color:var(--dim);font-weight:400">· analyzing your PDF…</span>}
-              </label>
+              <label class="field-label">Result size at each level (already computed, exact)</label>
               <div class="level-grid">
-                <button
-                  class={`level ${level === 'lossless' ? 'on' : ''}`}
-                  disabled={losslessDisabled}
-                  onClick={() => !losslessDisabled && setLevel('lossless')}>
-                  <span class="lv-name">Lossless</span>
-                  <span class="lv-hint">exact same quality</span>
-                  {losslessSize != null ? (
-                    losslessSize < (file?.size ?? 0) ? (
-                      <span class="lv-est num good">{formatBytes(losslessSize)} · −{pct(losslessSize)}%</span>
-                    ) : (
-                      <span class="lv-est bad">already optimal</span>
-                    )
-                  ) : (
-                    <span class="lv-est">{analyzing ? '…' : 'not available'}</span>
-                  )}
-                </button>
-                {RASTER_KEYS.map((k) => {
-                  const est = estimates[k];
-                  const disabled = rasterDisabled(k);
-                  const shrinks = est != null && file != null && est < file.size;
+                {LEVEL_KEYS.map((k) => {
+                  const size = sizes[k];
+                  const shrinks = size != null && size < file.size;
+                  const disabled = !shrinks;
                   return (
                     <button key={k} class={`level ${level === k ? 'on' : ''}`} disabled={disabled}
-                      onClick={() => !disabled && setLevel(k)}>
-                      <span class="lv-name">{RASTER_LEVELS[k].label}</span>
-                      <span class="lv-hint">{RASTER_LEVELS[k].hint}</span>
-                      {tooManyPages ? (
-                        <span class="lv-est bad">too many pages</span>
-                      ) : est != null ? (
+                      onClick={() => shrinks && setLevel(k)}>
+                      <span class="lv-name">{LEVELS[k].label}</span>
+                      <span class="lv-hint">{LEVELS[k].hint}</span>
+                      {size != null ? (
                         shrinks ? (
-                          <span class="lv-est num good">~{formatBytes(est)} · −{pct(est)}%</span>
+                          <span class="lv-est num good">{formatBytes(size)} · −{pct(size)}%</span>
                         ) : (
                           <span class="lv-est bad">would enlarge</span>
                         )
                       ) : (
-                        <span class="lv-est">{analyzing ? '…' : ''}</span>
+                        <span class="lv-est bad">{failed[k] ? 'not possible' : ''}</span>
                       )}
                     </button>
                   );
                 })}
               </div>
-              {allRasterOut && !losslessDisabled && (
-                <p class="method-note">
-                  This PDF is text-based and already efficient, so re-rendering its pages would only enlarge it.
-                  Lossless optimization is the right method here: it keeps the exact quality.
-                </p>
-              )}
               {nothingHelps && (
                 <p class="method-note">
-                  This PDF is already as small as it can get without losing quality. Compressing it further is not possible, and we will not offer an option that makes it larger.
+                  This PDF is already as small as this quality allows. We will not offer an option that makes it larger.
                 </p>
               )}
+              <p class="method-note">
+                Text stays selectable and searchable. Compression happens on your device; the file is never uploaded.
+              </p>
             </div>
           )}
 
-          {file && (
+          {file && !error && (
             <div class="btn-row">
-              <button class="btn btn-primary" onClick={run} disabled={analyzing || !level}>
-                {level === 'lossless' ? 'Optimize PDF' : 'Compress PDF'}
-              </button>
+              <button class="btn btn-primary" onClick={run} disabled={!level}>Get compressed PDF</button>
               <button class="btn btn-ghost" onClick={reset}>Clear</button>
             </div>
           )}
-          {error && <p class="tool-error">{error}</p>}
+          {error && (
+            <>
+              <p class="tool-error">{error}</p>
+              <div class="btn-row"><button class="btn btn-ghost" onClick={reset}>Clear</button></div>
+            </>
+          )}
 
           {result && (
             <>
@@ -258,7 +210,7 @@ export default function PdfCompress() {
               </div>
               <div class="btn-row">
                 <button class="btn btn-primary" onClick={() => downloadBlob(result.blob, (file?.name.replace(/\.pdf$/i, '') || 'file') + '-compressed.pdf')}>
-                  Download PDF
+                  Download compressed PDF
                 </button>
               </div>
             </>
@@ -266,7 +218,7 @@ export default function PdfCompress() {
         </>
       )}
       <style>{`
-        .level-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.6rem; }
+        .level-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.6rem; }
         .level {
           display:flex; flex-direction:column; align-items:flex-start; gap:0.15rem;
           padding:0.75rem 0.9rem; background:#fff; border:1px solid var(--hairline);
