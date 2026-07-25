@@ -7,11 +7,14 @@ import ProgressRing from '../ui/ProgressRing';
  *  quality, then rebuilds a smaller PDF. As soon as a file is dropped, a few
  *  sample pages are rendered at every level so the expected output size is
  *  shown on each option BEFORE compressing. Runs entirely in the browser. */
+/** Text legibility depends on render resolution far more than JPEG quality,
+ *  so every level keeps the scale at or above 1.3 (about 120 DPI) and the
+ *  size reduction comes from the JPEG quality instead. */
 const LEVELS = {
-  extreme: { label: 'Extreme', hint: 'smallest file', scale: 0.9, quality: 0.28 },
-  strong: { label: 'Strong', hint: 'small, readable', scale: 1.1, quality: 0.45 },
-  balanced: { label: 'Balanced', hint: 'good quality', scale: 1.5, quality: 0.62 },
-  light: { label: 'Light', hint: 'near original', scale: 2.0, quality: 0.8 },
+  extreme: { label: 'Extreme', hint: 'smallest file', scale: 1.3, quality: 0.3 },
+  strong: { label: 'Strong', hint: 'small, readable', scale: 1.5, quality: 0.5 },
+  balanced: { label: 'Balanced', hint: 'good quality', scale: 1.8, quality: 0.65 },
+  light: { label: 'Light', hint: 'near original', scale: 2.2, quality: 0.8 },
 } as const;
 type Level = keyof typeof LEVELS;
 const LEVEL_KEYS = Object.keys(LEVELS) as Level[];

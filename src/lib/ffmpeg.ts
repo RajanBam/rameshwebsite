@@ -24,7 +24,10 @@ export function getFFmpeg(onLoadProgress?: (msg: string) => void): Promise<FFmpe
   if (loading) return loading;
   loading = (async () => {
     onLoadProgress?.('Loading engine…');
-    const mod = await import(/* @vite-ignore */ '/ffmpeg/esm/index.js');
+    // The URL goes through a variable so no bundler (dev server or build)
+    // tries to statically resolve it; it exists only at serve time.
+    const runtimeUrl = '/ffmpeg/esm/index.js';
+    const mod = await import(/* @vite-ignore */ runtimeUrl);
     const ff: FFmpeg = new mod.FFmpeg();
     await ff.load({
       coreURL: '/ffmpeg/ffmpeg-core.js',
