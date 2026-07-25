@@ -2,7 +2,7 @@
 // Pages, nav, the all-tools index, homepage stages and the sitemap all
 // read from here. Adding a tool = adding an entry here + a component.
 
-export type Category = 'pdf' | 'image' | 'finance' | 'developer' | 'text';
+export type Category = 'pdf' | 'image' | 'media' | 'finance' | 'developer' | 'text';
 
 export interface FaqItem {
   q: string;
@@ -40,6 +40,7 @@ export interface Tool {
 export const CATEGORIES: Record<Category, { label: string; blurb: string }> = {
   pdf: { label: 'PDF', blurb: 'Merge, split, compress and convert. Nothing uploaded.' },
   image: { label: 'Image', blurb: 'Compress, resize and convert by the hundred.' },
+  media: { label: 'Video & Audio', blurb: 'Compress video and audio on your own device.' },
   finance: { label: 'Calculators', blurb: 'Answers as you type.' },
   developer: { label: 'Developer', blurb: 'The small tools you reach for daily.' },
   text: { label: 'Text', blurb: 'Count, convert and compare text instantly.' },
@@ -284,6 +285,63 @@ export const TOOLS: Tool[] = [
         { q: 'Why will my HEIC photos not open elsewhere?', a: 'HEIC is Apple format. Converting to JPG makes the photos open anywhere: Windows, Android, email, and every website.' },
         { q: 'Are my photos uploaded to convert them?', a: 'No. The conversion runs inside your browser. Your photos never leave your device.' },
         { q: 'Can I convert many at once?', a: 'Yes, drop in the whole batch. They convert one after another and download together as a zip.' },
+      ],
+    },
+  },
+  // -------------------------------------------------------------- Media
+  {
+    slug: 'video-compress',
+    name: 'Compress Video',
+    category: 'media',
+    tagline: 'Smaller videos. Same device.',
+    component: 'VideoCompress',
+    seo: {
+      title: 'Compress Video: reduce video file size free, in your browser',
+      description:
+        'Shrink MP4, MOV and WebM videos right in your browser. See the expected size before you start. No upload, no watermark, nothing leaves your device.',
+      keywords: ['compress video', 'video compressor', 'reduce video size', 'compress mp4', 'video size reducer'],
+    },
+    content: {
+      intro:
+        'Make a video small enough to send or upload, without sending it anywhere yourself. The encoder runs inside your browser, and the expected output size for every quality level is shown from the moment you drop the file in.',
+      steps: [
+        'Drop in a video. Its length is read and the expected size appears on each quality option.',
+        'Pick Small (480p), Medium (720p) or High (1080p).',
+        'Click Compress and watch the progress ring, then download the MP4.',
+      ],
+      faq: [
+        { q: 'Is my video uploaded to a server?', a: 'No. The encoder itself runs in your browser, so the video never leaves your device. The first use downloads the encoding engine once, about 31 MB, and it is cached after that.' },
+        { q: 'How do I know the output size before compressing?', a: 'Compression targets a fixed bitrate, so the expected size is the bitrate multiplied by the video length. That estimate is shown on each quality option as soon as your file is loaded.' },
+        { q: 'Why is it slower than an online converter?', a: 'Everything is computed by your own processor rather than a server farm. Short clips take moments; long, high-resolution videos take longer. The trade is privacy: nothing is uploaded.' },
+        { q: 'Which formats can I compress?', a: 'MP4, MOV, WebM, MKV and AVI inputs are supported, and the output is a widely compatible MP4 (H.264 with AAC audio).' },
+      ],
+    },
+  },
+  {
+    slug: 'audio-compress',
+    name: 'Compress Audio',
+    category: 'media',
+    tagline: 'Lighter audio, chosen bitrate.',
+    component: 'AudioCompress',
+    seo: {
+      title: 'Compress Audio: reduce MP3, WAV, M4A size free, in your browser',
+      description:
+        'Shrink audio files to MP3 at the bitrate you choose, right in your browser. See the expected size before you start. No upload, nothing leaves your device.',
+      keywords: ['compress audio', 'audio compressor', 'reduce mp3 size', 'wav to mp3', 'compress audio online'],
+    },
+    content: {
+      intro:
+        'Convert big WAV, FLAC or M4A files, or oversized MP3s, into a lean MP3 at the bitrate you pick. The expected output size appears as soon as you drop the file in, and the encoding happens entirely on your device.',
+      steps: [
+        'Drop in an audio file. Its length is read and the expected size appears on each quality option.',
+        'Pick Voice (64 kbps), Standard (128 kbps) or High (192 kbps).',
+        'Click Compress, then download the MP3.',
+      ],
+      faq: [
+        { q: 'Is my audio uploaded?', a: 'No. Encoding runs in your browser using a locally loaded engine. Your recordings never leave your device, which matters for voice notes and interviews.' },
+        { q: 'How accurate is the size estimate?', a: 'MP3 at a fixed bitrate has a predictable size: bitrate times duration. The number shown next to each option is what you will get, within about a percent.' },
+        { q: 'Which bitrate should I choose?', a: 'For spoken voice, 64 kbps is clear and small. For everyday music listening, 128 kbps is the standard. Choose 192 kbps when quality matters more than size.' },
+        { q: 'Which input formats work?', a: 'MP3, WAV, M4A, AAC, OGG and FLAC all convert. The output is MP3, which plays everywhere.' },
       ],
     },
   },

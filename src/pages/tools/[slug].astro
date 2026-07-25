@@ -10,6 +10,8 @@ import PdfCompress from '../../components/tools/PdfCompress.tsx';
 import ImageCompress from '../../components/tools/ImageCompress.tsx';
 import ImageConvert from '../../components/tools/ImageConvert.tsx';
 import ImageResize from '../../components/tools/ImageResize.tsx';
+import VideoCompress from '../../components/tools/VideoCompress.tsx';
+import AudioCompress from '../../components/tools/AudioCompress.tsx';
 import HeicToJpg from '../../components/tools/HeicToJpg.tsx';
 import NepalIncomeTax from '../../components/tools/NepalIncomeTax.tsx';
 import EmiCalculator from '../../components/tools/EmiCalculator.tsx';
@@ -46,6 +48,8 @@ const tool = getTool(slug!)!;
   {tool.component === 'ImageCompress' && <ImageCompress client:only="preact" />}
   {tool.component === 'ImageConvert' && <ImageConvert client:only="preact" />}
   {tool.component === 'ImageResize' && <ImageResize client:only="preact" />}
+  {tool.component === 'VideoCompress' && <VideoCompress client:only="preact" />}
+  {tool.component === 'AudioCompress' && <AudioCompress client:only="preact" />}
   {tool.component === 'HeicToJpg' && <HeicToJpg client:load />}
   {tool.component === 'NepalIncomeTax' && <NepalIncomeTax client:load />}
   {tool.component === 'EmiCalculator' && <EmiCalculator client:load />}

@@ -4,50 +4,84 @@ import { SITE } from '../lib/site';
 ---
 
 <BaseLayout
-  title={`Privacy: don't trust us, verify it | ${SITE.name}`}
-  description={`${SITE.name} runs entirely in your browser. Your files are never uploaded. Here are three ways to prove it yourself.`}
-  keywords={['privacy tools', 'no upload', 'client-side processing', 'offline tools']}
+  title={`How ${SITE.name} protects your files | ${SITE.name}`}
+  description={`${SITE.name} processes every file locally in your browser. Nothing is uploaded to any server. Learn how the architecture works and how to verify it yourself.`}
+  keywords={['privacy tools', 'no upload', 'client-side processing', 'local file processing', 'offline tools']}
 >
-  <section class="p-hero container center">
-    <h1>Don't trust us.<br />Verify it.</h1>
-    <p class="sub">Every tool here runs inside your browser tab. Your files are never sent to a server, not ours and not anyone's. You don't have to take our word for it. Check it yourself, three ways.</p>
+  <section class="p-hero container">
+    <h1>Privacy by architecture,<br />not by promise.</h1>
+    <p class="sub">Most online tools upload your files to a server, process them there, and ask you to trust a policy about what happens next. {SITE.name} is built differently: the processing code runs inside your own browser, so your files never leave your device in the first place. There is nothing to trust, because there is nothing to send.</p>
   </section>
 
-  <section class="container cards">
-    <div class="verify-card">
-      <span class="vc-num mono">01</span>
-      <h2>Watch the Network tab</h2>
-      <p>Open your browser's developer tools, go to the Network tab, and use any tool. You'll see no upload request for your files, because there isn't one.</p>
-    </div>
-    <div class="verify-card">
-      <span class="vc-num mono">02</span>
-      <h2>Kill your Wi-Fi</h2>
-      <p>Load a tool, then turn off your internet connection and use it. Everything still works. A tool that uploaded your files couldn't.</p>
-    </div>
-    <div class="verify-card">
-      <span class="vc-num mono">03</span>
-      <h2>Read the source</h2>
-      <p>The processing code ships to your browser in plain sight. Inspect it, or read the project. There's no server step to hide.</p>
+  <section class="container p-body">
+    <h2>How it works</h2>
+    <p>When you open a tool, your browser downloads the tool's code, the same way it downloads any web page. From that point on, all of the work, whether merging a PDF, compressing a photo, or calculating your tax, happens on your own processor, in your own memory, inside the browser tab. The file you select is read locally, transformed locally, and saved back to your device locally. No copy is transmitted, cached, or stored anywhere else.</p>
+    <p>This is not a premium feature or a special mode. It is the only way the site works. {SITE.name} has no upload endpoint, no file storage, and no processing servers, so mishandling your files is not just against policy, it is technically impossible.</p>
+
+    <h2>What this means in practice</h2>
+    <ul class="p-list">
+      <li><strong>Confidential documents stay confidential.</strong> Contracts, bank statements, medical records and ID scans are processed without ever being exposed to a third party, including us.</li>
+      <li><strong>No file-size or batch limits.</strong> Server-based tools cap free usage because processing costs them money per file. Local processing has no per-file cost, so there is nothing to cap.</li>
+      <li><strong>No account required.</strong> There is nothing to sign up for and no profile to build.</li>
+      <li><strong>It works offline.</strong> Once a tool page has loaded, it keeps working without an internet connection, which is only possible because no server is involved.</li>
+    </ul>
+  </section>
+
+  <section class="container p-verify">
+    <h2>Verify it yourself</h2>
+    <p class="verify-lead">You should not have to take any website's word on privacy. Here are three independent ways to confirm that your files are not being uploaded.</p>
+    <div class="cards">
+      <div class="verify-card">
+        <span class="vc-num mono">01</span>
+        <h3>Inspect the network traffic</h3>
+        <p>Open your browser's developer tools (F12), select the Network tab, and use any tool. You will see the page and its code load, and then no upload request when you process a file, because none is made.</p>
+      </div>
+      <div class="verify-card">
+        <span class="vc-num mono">02</span>
+        <h3>Disconnect and try again</h3>
+        <p>Load a tool, then turn off your Wi-Fi or unplug your network cable and use it. Everything still works. A tool that depended on a server could not function without a connection.</p>
+      </div>
+      <div class="verify-card">
+        <span class="vc-num mono">03</span>
+        <h3>Read the code</h3>
+        <p>The processing code is delivered to your browser in full and can be inspected with standard developer tools. There is no hidden server step, because the browser is the only place the work can happen.</p>
+      </div>
     </div>
   </section>
 
-  <section class="container statement-block">
-    <p class="trust big"><span class="dot"></span>0&nbsp;B uploaded</p>
-    <p class="sub">This is the one promise that never changes. We may add ads below tools later to keep the site running, but your files will always stay on your device.</p>
+  <section class="container p-body">
+    <h2>What we do and do not collect</h2>
+    <p>We do not collect your files, their contents, their names, or anything derived from them. We do not require or store personal information. Like most websites, we may use privacy-respecting, aggregate analytics to understand which tools are used, and we may show advertising below the tools to keep them free. Neither has any access to the files you process. The full details are in our <a href="/privacy-policy/">Privacy Policy</a> and <a href="/cookies/">Cookie Policy</a>.</p>
+
+    <h2>Our commitment</h2>
+    <p>Features will come and go, and the site will keep growing, but one rule is permanent: <strong>your files are processed on your device and never uploaded.</strong> If a future tool cannot be built within that rule, it will not be built.</p>
+
+    <div class="statement-block">
+      <p class="trust big"><span class="dot"></span>0&nbsp;B uploaded</p>
+      <p class="statement-sub">Total data received from your files, since launch, by design.</p>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
-  .p-hero { padding-top: clamp(3rem, 8vw, 5rem); max-width: 760px; text-align: center; }
-  .center { text-align: center; }
+  .p-hero { padding-top: clamp(3rem, 8vw, 5rem); max-width: 820px; }
   .p-hero h1 { font-size: var(--t-stage); }
-  .sub { color: var(--dim); font-size: var(--t-sub); margin-top: 1.25rem; }
-  .p-hero .sub { max-width: 60ch; margin-inline: auto; }
+  .sub { color: var(--dim); font-size: var(--t-sub); margin-top: 1.25rem; max-width: 70ch; }
+  .p-body { max-width: 820px; margin-top: clamp(2.5rem, 6vw, 4rem); }
+  .p-body h2 { font-size: 1.5rem; margin-bottom: 0.9rem; }
+  .p-body h2 + p, .p-body p + p { margin-top: 0.9rem; }
+  .p-body p { color: var(--ink); line-height: 1.65; }
+  .p-body h2:not(:first-child) { margin-top: 2.75rem; }
+  .p-list { padding-left: 1.25rem; margin-top: 1rem; }
+  .p-list li { margin-bottom: 0.9rem; color: var(--ink); line-height: 1.6; }
+  .p-verify { margin-top: clamp(2.5rem, 6vw, 4rem); }
+  .p-verify h2 { font-size: 1.5rem; }
+  .verify-lead { color: var(--dim); margin-top: 0.75rem; max-width: 70ch; }
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1rem;
-    margin-top: clamp(2.5rem, 6vw, 4rem);
+    margin-top: 1.75rem;
   }
   .verify-card {
     background: var(--card);
@@ -57,10 +91,16 @@ import { SITE } from '../lib/site';
     padding: 2rem;
   }
   .vc-num { color: var(--blue); font-size: var(--t-small); }
-  .verify-card h2 { font-size: 1.3rem; margin-block: 0.75rem; }
-  .verify-card p { color: var(--dim); font-size: var(--t-small); }
-  .statement-block { text-align: center; margin-top: clamp(3rem, 8vw, 5rem); max-width: 600px; }
+  .verify-card h3 { font-size: 1.15rem; margin-block: 0.75rem; }
+  .verify-card p { color: var(--dim); font-size: var(--t-small); line-height: 1.6; }
+  .statement-block {
+    text-align: center;
+    margin-block: clamp(3rem, 7vw, 4.5rem) 1rem;
+    padding: 2.5rem 1.5rem;
+    background: var(--gray);
+    border-radius: var(--radius);
+  }
   .trust.big { font-size: 1.75rem; justify-content: center; }
   .trust.big .dot { width: 12px; height: 12px; }
-  .statement-block .sub { margin-top: 1rem; }
+  .statement-sub { color: var(--dim); font-size: var(--t-small); margin-top: 0.6rem; }
 </style>
