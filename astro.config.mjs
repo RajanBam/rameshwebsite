@@ -14,6 +14,11 @@ export default defineConfig({
     build: {
       // Keep worker + wasm chunks predictable for offline caching later.
       assetsInlineLimit: 0,
+      rollupOptions: {
+        // The ffmpeg client is self-hosted under /ffmpeg/ and imported at
+        // runtime (bundling it breaks its internal worker start-up).
+        external: ['/ffmpeg/esm/index.js'],
+      },
     },
   },
 });
