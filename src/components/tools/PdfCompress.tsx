@@ -26,6 +26,7 @@ export default function PdfCompress() {
   const [pages, setPages] = useState(0);
   const [busyLevel, setBusyLevel] = useState<Level | null>(null);
   const [progress, setProgress] = useState(0);
+  const [curPage, setCurPage] = useState(0);
   const [error, setError] = useState('');
   const [results, setResults] = useState<Partial<Record<Level, { blob: Blob; size: number; ok: boolean }>>>({});
   const [active, setActive] = useState<Level>('smallest');
@@ -36,7 +37,7 @@ export default function PdfCompress() {
   const reset = () => {
     jobId.current++;
     setFile(null); setResults({}); setPages(0); setError('');
-    setBusyLevel(null); setProgress(0); setActive('smallest');
+    setBusyLevel(null); setProgress(0); setCurPage(0); setActive('smallest');
     bufRef.current = null; pagesRef.current = 0;
   };
 
@@ -46,7 +47,9 @@ export default function PdfCompress() {
     setBusyLevel(lvl); setProgress(0); setError('');
     try {
       const out = await runGhostscript(bufRef.current, LEVELS[lvl].setting, (page) => {
-        if (job === jobId.current && pagesRef.current) setProgress(Math.min(99, Math.round((page / pagesRef.current) * 100)));
+        if (job !== jobId.current) return;
+        setCurPage(page);
+        if (pagesRef.current) setProgress(Math.min(99, Math.round((page / pagesRef.current) * 100)));
       });
       if (job !== jobId.current) return;
       const ok = out.length < file.size;
@@ -82,7 +85,9 @@ export default function PdfCompress() {
       } catch { /* ignore */ }
       // One pass at maximum compression, immediately.
       const out = await runGhostscript(bufRef.current, LEVELS.smallest.setting, (page) => {
-        if (job === jobId.current && pagesRef.current) setProgress(Math.min(99, Math.round((page / pagesRef.current) * 100)));
+        if (job !== jobId.current) return;
+        setCurPage(page);
+        if (pagesRef.current) setProgress(Math.min(99, Math.round((page / pagesRef.current) * 100)));
       });
       if (job !== jobId.current) return;
       const ok = out.length < pdf.size;
@@ -105,9 +110,14 @@ export default function PdfCompress() {
   return (
     <div class="tool-card">
       {busyLevel ? (
-        <ProgressRing value={progress}
-          label={`Compressing (${LEVELS[busyLevel].label})…`}
-          sublabel={pages ? `${pages} pages · on your device` : 'On your device'} />
+        <>
+          <ProgressRing value={progress}
+            label={`Compressing (${LEVELS[busyLevel].label})…`}
+            sublabel={pages ? `Page ${curPage.toLocaleString()} of ${pages.toLocaleString()}` : 'Working on your device'} />
+          {pages > 1500 && (
+            <p class="method-note" style="text-align:center">A file this large takes a few minutes in the browser. It is working, not stuck; the page counter above is live.</p>
+          )}
+        </>
       ) : (
         <>
           <div class={`dropzone ${drag ? 'drag' : ''}`}

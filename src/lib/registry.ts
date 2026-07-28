@@ -347,6 +347,33 @@ export const TOOLS: Tool[] = [
   },
   // ------------------------------------------------------------ Finance
   {
+    slug: 'calculator',
+    name: 'Calculator',
+    category: 'finance',
+    tagline: 'The one you already know.',
+    component: 'Calculator',
+    seo: {
+      title: 'Calculator: a clean, fast online calculator, free',
+      description:
+        'A simple, beautiful online calculator that works instantly with your mouse or keyboard. No ads in the way, nothing uploaded.',
+      keywords: ['online calculator', 'free calculator', 'simple calculator', 'basic calculator'],
+    },
+    content: {
+      intro:
+        'A clean, fast calculator for everyday sums, styled like the one on your phone. Click the keys or just type on your keyboard. It runs entirely in your browser.',
+      steps: [
+        'Type numbers and operators, or click the keys.',
+        'Press Enter or the equals key for the result.',
+        'Press Esc or C to clear and start again.',
+      ],
+      faq: [
+        { q: 'Can I use my keyboard?', a: 'Yes. Number keys, plus, minus, star and slash all work, along with Enter for equals and Escape to clear.' },
+        { q: 'Does it handle percentages?', a: 'Yes. The percent key divides the current number by one hundred, so you can work out simple percentages quickly.' },
+        { q: 'Is anything uploaded?', a: 'No. The calculator runs entirely in your browser.' },
+      ],
+    },
+  },
+  {
     slug: 'nepal-income-tax',
     name: 'Nepal Income Tax',
     category: 'finance',
@@ -435,6 +462,33 @@ export const TOOLS: Tool[] = [
           q: 'Do QR codes expire?',
           a: 'No. A QR code is just an encoded version of your text or link. It works as long as the link it points to works.',
         },
+      ],
+    },
+  },
+  {
+    slug: 'url-shortener',
+    name: 'URL Shortener',
+    category: 'developer',
+    tagline: 'Long links, made short.',
+    component: 'UrlShortener',
+    seo: {
+      title: 'Free URL Shortener: short links and QR codes, no account',
+      description:
+        'Shorten any long link into a short, shareable URL and get a QR code, free and with no sign-up. Uses free public shortening services.',
+      keywords: ['url shortener', 'link shortener', 'shorten url', 'free short links', 'tinyurl alternative'],
+    },
+    content: {
+      intro:
+        'Turn a long, messy link into a short one that is easy to share, and get a QR code for it at the same time. It is free with no account. Because shortening a link needs a server to redirect it, this tool uses free public shortening services.',
+      steps: [
+        'Paste your long link.',
+        'Click Shorten. A short link and a QR code appear.',
+        'Copy the link, or scan the QR code with a phone.',
+      ],
+      faq: [
+        { q: 'Do I need an account?', a: 'No. There is no sign-up and no limit for normal use. Paste a link and get a short one back.' },
+        { q: 'How is this different from your other tools?', a: 'Every other tool here works entirely on your device. Shortening a link is the exception: it needs a server to store and redirect the short link, so this tool sends your link to a free public shortening service. Since a shortened link is meant to be shared, no private file is involved.' },
+        { q: 'Do I get a QR code too?', a: 'Yes. A QR code of the short link is generated on your device, so you can share it in print or on screen.' },
       ],
     },
   },

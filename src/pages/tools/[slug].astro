@@ -26,6 +26,8 @@ import CsvJson from '../../components/tools/CsvJson.tsx';
 import TimestampConverter from '../../components/tools/TimestampConverter.tsx';
 import ColorPicker from '../../components/tools/ColorPicker.tsx';
 import LinkInBio from '../../components/tools/LinkInBio.tsx';
+import UrlShortener from '../../components/tools/UrlShortener.tsx';
+import Calculator from '../../components/tools/Calculator.tsx';
 import WordCounter from '../../components/tools/WordCounter.tsx';
 import CaseConverter from '../../components/tools/CaseConverter.tsx';
 import LoremIpsum from '../../components/tools/LoremIpsum.tsx';
@@ -65,6 +67,8 @@ const tool = getTool(slug!)!;
   {tool.component === 'TimestampConverter' && <TimestampConverter client:only="preact" />}
   {tool.component === 'ColorPicker' && <ColorPicker client:load />}
   {tool.component === 'LinkInBio' && <LinkInBio client:only="preact" />}
+  {tool.component === 'UrlShortener' && <UrlShortener client:only="preact" />}
+  {tool.component === 'Calculator' && <Calculator client:only="preact" />}
   {tool.component === 'WordCounter' && <WordCounter client:load />}
   {tool.component === 'CaseConverter' && <CaseConverter client:load />}
   {tool.component === 'LoremIpsum' && <LoremIpsum client:only="preact" />}
