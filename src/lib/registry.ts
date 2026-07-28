@@ -439,6 +439,33 @@ export const TOOLS: Tool[] = [
     },
   },
   {
+    slug: 'link-in-bio',
+    name: 'Link-in-Bio Page',
+    category: 'developer',
+    tagline: 'One page for all your links.',
+    component: 'LinkInBio',
+    seo: {
+      title: 'Free Link-in-Bio Page Builder: no subscription, no account',
+      description:
+        'Build a link-in-bio page and download it as one self-contained HTML file to host free anywhere. No monthly fee, no account, nothing uploaded.',
+      keywords: ['link in bio', 'linktree alternative', 'free bio page', 'link page builder', 'bio link free'],
+    },
+    content: {
+      intro:
+        'Build a single page that holds all of your links, the kind other services charge a monthly fee for, and download it as one self-contained HTML file you host for free. Everything is edited on your device, so nothing is uploaded and there is no account.',
+      steps: [
+        'Add your name, a short bio, a photo, and your links.',
+        'Pick a theme and watch the live preview update.',
+        'Download the HTML file and upload it to any free host, such as GitHub Pages or Netlify.',
+      ],
+      faq: [
+        { q: 'Is this really free with no subscription?', a: 'Yes. Popular bio-link services charge monthly for extra pages and features. This builder is free with no account, because it simply generates a file you own and host yourself.' },
+        { q: 'Where do I put the downloaded page?', a: 'Upload the single HTML file to any free static host, for example GitHub Pages, Netlify or Cloudflare Pages. Because everything is in one file, it works immediately.' },
+        { q: 'Is my information uploaded?', a: 'No. The page is built entirely in your browser. Your photo and links never leave your device until you choose to publish the file yourself.' },
+      ],
+    },
+  },
+  {
     slug: 'json-formatter',
     name: 'JSON Formatter',
     category: 'developer',

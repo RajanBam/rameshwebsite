@@ -5,40 +5,60 @@ import { runGhostscript, type GsSetting } from '../../lib/gs';
 import ProgressRing from '../ui/ProgressRing';
 
 /** PDF Compress, powered by a WebAssembly build of Ghostscript running in a
- *  worker: the same class of engine the big PDF sites run on their servers,
- *  except here the file never leaves the device.
+ *  worker: the same engine class the big PDF sites run on their servers,
+ *  except the file never leaves the device.
  *
- *  On drop, the file is compressed at every quality level in the background,
- *  so each option shows its REAL output size (not an estimate) before the
- *  user chooses. Text stays selectable; embedded images are downsampled.
- *  Any level that would enlarge the file is disabled, never offered. */
+ *  On drop it runs the maximum-compression level immediately (one pass) so
+ *  the user sees the biggest saving fast. Higher-quality levels are one
+ *  click away and run on demand. Text stays selectable; images are
+ *  downsampled. A result that would enlarge the file is never shown. */
 const LEVELS: Record<string, { setting: GsSetting; label: string; hint: string }> = {
-  smallest: { setting: '/screen', label: 'Smallest', hint: 'images at 72 dpi' },
-  balanced: { setting: '/ebook', label: 'Balanced', hint: 'images at 150 dpi' },
-  high: { setting: '/printer', label: 'High quality', hint: 'images at 300 dpi' },
+  smallest: { setting: '/screen', label: 'Maximum', hint: 'smallest file · 72 dpi images' },
+  balanced: { setting: '/ebook', label: 'Balanced', hint: 'great quality · 150 dpi images' },
+  high: { setting: '/printer', label: 'High quality', hint: 'print-ready · 300 dpi images' },
 };
 type Level = keyof typeof LEVELS;
 const LEVEL_KEYS = Object.keys(LEVELS) as Level[];
 
 export default function PdfCompress() {
   const [file, setFile] = useState<File | null>(null);
-  const [level, setLevel] = useState<Level | null>(null);
   const [drag, setDrag] = useState(false);
   const [pages, setPages] = useState(0);
-  const [sizes, setSizes] = useState<Partial<Record<Level, number>>>({});
-  const [failed, setFailed] = useState<Partial<Record<Level, boolean>>>({});
-  const [analyzing, setAnalyzing] = useState(false);
-  const [progress, setProgress] = useState(-1);
+  const [busyLevel, setBusyLevel] = useState<Level | null>(null);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
-  const [result, setResult] = useState<{ blob: Blob; before: number } | null>(null);
-  const outputs = useRef<Partial<Record<Level, Uint8Array>>>({});
+  const [results, setResults] = useState<Partial<Record<Level, { blob: Blob; size: number; ok: boolean }>>>({});
+  const [active, setActive] = useState<Level>('smallest');
+  const bufRef = useRef<ArrayBuffer | null>(null);
   const jobId = useRef(0);
+  const pagesRef = useRef(0);
 
   const reset = () => {
     jobId.current++;
-    setFile(null); setResult(null); setSizes({}); setFailed({}); setPages(0);
-    setError(''); setLevel(null); setProgress(-1); setAnalyzing(false);
-    outputs.current = {};
+    setFile(null); setResults({}); setPages(0); setError('');
+    setBusyLevel(null); setProgress(0); setActive('smallest');
+    bufRef.current = null; pagesRef.current = 0;
+  };
+
+  const compressAt = async (lvl: Level) => {
+    if (!bufRef.current || !file) return;
+    const job = jobId.current;
+    setBusyLevel(lvl); setProgress(0); setError('');
+    try {
+      const out = await runGhostscript(bufRef.current, LEVELS[lvl].setting, (page) => {
+        if (job === jobId.current && pagesRef.current) setProgress(Math.min(99, Math.round((page / pagesRef.current) * 100)));
+      });
+      if (job !== jobId.current) return;
+      const ok = out.length < file.size;
+      setResults((r) => ({ ...r, [lvl]: { blob: new Blob([out as unknown as BlobPart], { type: 'application/pdf' }), size: out.length, ok } }));
+      setActive(lvl);
+    } catch {
+      if (job !== jobId.current) return;
+      setResults((r) => ({ ...r, [lvl]: undefined }));
+      setError('This level could not be produced. The file may be encrypted or damaged.');
+    } finally {
+      if (job === jobId.current) setBusyLevel(null);
+    }
   };
 
   const add = async (list: FileList | File[]) => {
@@ -47,92 +67,47 @@ export default function PdfCompress() {
     reset();
     const job = ++jobId.current;
     setFile(pdf);
-    setAnalyzing(true);
-    setProgress(0);
+    setBusyLevel('smallest');
     try {
-      const buf = await pdf.arrayBuffer();
-
-      // Page count (for progress) via pdf.js, quickly and locally.
-      let numPages = 0;
+      bufRef.current = await pdf.arrayBuffer();
+      // Page count for the progress bar (cosmetic).
       try {
         const pdfjs = await import('pdfjs-dist');
         pdfjs.GlobalWorkerOptions.workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
-        const doc = await pdfjs.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
-        numPages = doc.numPages;
+        const doc = await pdfjs.getDocument({ data: new Uint8Array(bufRef.current.slice(0)) }).promise;
         if (job !== jobId.current) return;
-        setPages(numPages);
+        pagesRef.current = doc.numPages;
+        setPages(doc.numPages);
         doc.destroy();
-      } catch { /* page count is cosmetic; continue without it */ }
-
-      // Compress at every level, smallest first, storing the real outputs.
-      const done: Partial<Record<Level, number>> = {};
-      const bad: Partial<Record<Level, boolean>> = {};
-      for (let i = 0; i < LEVEL_KEYS.length; i++) {
-        const key = LEVEL_KEYS[i];
-        if (job !== jobId.current) return;
-        try {
-          const out = await runGhostscript(buf, LEVELS[key].setting, (page) => {
-            if (job !== jobId.current || !numPages) return;
-            setProgress(Math.min(99, Math.round(((i + page / numPages) / LEVEL_KEYS.length) * 100)));
-          });
-          outputs.current[key] = out;
-          done[key] = out.length;
-        } catch {
-          bad[key] = true;
-        }
-        if (job !== jobId.current) return;
-        setSizes({ ...done });
-        setFailed({ ...bad });
-        setProgress(Math.min(99, Math.round(((i + 1) / LEVEL_KEYS.length) * 100)));
-      }
-
-      // Every level failed (corrupted/encrypted input): try a structural
-      // re-save so we still offer something when it helps.
-      if (Object.keys(done).length === 0) {
-        try {
-          const doc = await PDFDocument.load(new Uint8Array(buf.slice(0)), { ignoreEncryption: true });
-          const bytes = (await doc.save({ useObjectStreams: true })) as Uint8Array;
-          if (job !== jobId.current) return;
-          outputs.current.balanced = bytes;
-          done.balanced = bytes.length;
-          bad.balanced = false as any;
-          setSizes({ ...done }); setFailed({ ...bad });
-        } catch {
-          setError('This PDF could not be processed. It may be corrupted or password-protected.');
-        }
-      }
-
-      // Auto-select the best level that actually shrinks the file.
-      const shrinking = LEVEL_KEYS.filter((k) => done[k] != null && done[k]! < pdf.size);
-      setLevel(shrinking.includes('balanced') ? 'balanced' : shrinking[0] ?? null);
+      } catch { /* ignore */ }
+      // One pass at maximum compression, immediately.
+      const out = await runGhostscript(bufRef.current, LEVELS.smallest.setting, (page) => {
+        if (job === jobId.current && pagesRef.current) setProgress(Math.min(99, Math.round((page / pagesRef.current) * 100)));
+      });
+      if (job !== jobId.current) return;
+      const ok = out.length < pdf.size;
+      setResults({ smallest: { blob: new Blob([out as unknown as BlobPart], { type: 'application/pdf' }), size: out.length, ok } });
+      setActive('smallest');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not read this PDF.');
+      if (job === jobId.current) setError(e instanceof Error ? e.message : 'Could not read this PDF. It may be encrypted or damaged.');
     } finally {
-      if (job === jobId.current) { setAnalyzing(false); setProgress(-1); }
+      if (job === jobId.current) setBusyLevel(null);
     }
   };
 
-  // Outputs are computed during analysis, so compressing is instant.
-  const run = () => {
-    if (!file || !level) return;
-    const bytes = outputs.current[level];
-    if (!bytes) return;
-    setResult({ blob: new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' }), before: file.size });
-  };
-
-  const saved = result ? Math.round((1 - result.blob.size / result.before) * 100) : 0;
+  const cur = results[active];
+  const saved = cur && file ? Math.round((1 - cur.size / file.size) * 100) : 0;
   const pct = (n: number) => (file ? Math.round((1 - n / file.size) * 100) : 0);
-  const nothingHelps = file != null && !analyzing && !error &&
-    LEVEL_KEYS.every((k) => sizes[k] == null || sizes[k]! >= file.size);
+  const anyOk = LEVEL_KEYS.some((k) => results[k]?.ok);
+  const smallestDone = results.smallest !== undefined || (busyLevel === null && !!file);
+  const nothingHelps = smallestDone && file != null && !busyLevel && LEVEL_KEYS.every((k) => !results[k]?.ok) && !!results.smallest;
 
   return (
     <div class="tool-card">
-      {analyzing ? (
-        <ProgressRing
-          value={Math.max(0, progress)}
-          label="Compressing…"
-          sublabel={pages ? `${pages} pages · trying every quality level` : 'Trying every quality level'}
-        />
+      {busyLevel ? (
+        <ProgressRing value={progress}
+          label={`Compressing (${LEVELS[busyLevel].label})…`}
+          sublabel={pages ? `${pages} pages · on your device` : 'On your device'} />
       ) : (
         <>
           <div class={`dropzone ${drag ? 'drag' : ''}`}
@@ -148,77 +123,64 @@ export default function PdfCompress() {
               onChange={(e) => { const t = e.target as HTMLInputElement; if (t.files) add(t.files); t.value = ''; }} />
           </div>
 
-          {file && !error && (
-            <div class="field" style="margin-top:1.25rem">
-              <label class="field-label">Result size at each level (already computed, exact)</label>
+          {file && !error && anyOk && (
+            <>
+              <div class="stat-row" style="margin-top:1.5rem">
+                <div class="stat"><div class="stat-val">{formatBytes(file.size)}</div><div class="stat-label">before</div></div>
+                <div class="stat"><div class="stat-val">{cur ? formatBytes(cur.size) : '—'}</div><div class="stat-label">after</div></div>
+                <div class="stat"><div class="stat-val" style="color:var(--green)">−{saved}%</div><div class="stat-label">saved</div></div>
+              </div>
+
+              <label class="field-label" style="margin-top:1.5rem">Quality (tap to switch, recomputed on your device)</label>
               <div class="level-grid">
                 {LEVEL_KEYS.map((k) => {
-                  const size = sizes[k];
-                  const shrinks = size != null && size < file.size;
-                  const disabled = !shrinks;
+                  const r = results[k];
                   return (
-                    <button key={k} class={`level ${level === k ? 'on' : ''}`} disabled={disabled}
-                      onClick={() => shrinks && setLevel(k)}>
+                    <button key={k} class={`level ${active === k ? 'on' : ''}`}
+                      disabled={r != null && !r.ok}
+                      onClick={() => { if (r) { if (r.ok) setActive(k); } else compressAt(k); }}>
                       <span class="lv-name">{LEVELS[k].label}</span>
                       <span class="lv-hint">{LEVELS[k].hint}</span>
-                      {size != null ? (
-                        shrinks ? (
-                          <span class="lv-est num good">{formatBytes(size)} · −{pct(size)}%</span>
-                        ) : (
-                          <span class="lv-est bad">would enlarge</span>
-                        )
+                      {r ? (
+                        r.ok
+                          ? <span class="lv-est num good">{formatBytes(r.size)} · −{pct(r.size)}%</span>
+                          : <span class="lv-est bad">would enlarge</span>
                       ) : (
-                        <span class="lv-est bad">{failed[k] ? 'not possible' : ''}</span>
+                        <span class="lv-est">tap to try</span>
                       )}
                     </button>
                   );
                 })}
               </div>
-              {nothingHelps && (
-                <p class="method-note">
-                  This PDF is already as small as this quality allows. We will not offer an option that makes it larger.
-                </p>
-              )}
-              <p class="method-note">
-                Text stays selectable and searchable. Compression happens on your device; the file is never uploaded.
-              </p>
-            </div>
+
+              <div class="btn-row">
+                <button class="btn btn-primary" disabled={!cur?.ok}
+                  onClick={() => cur && downloadBlob(cur.blob, (file.name.replace(/\.pdf$/i, '') || 'file') + '-compressed.pdf')}>
+                  Download compressed PDF
+                </button>
+                <button class="btn btn-ghost" onClick={reset}>Clear</button>
+              </div>
+              <p class="method-note">Text stays selectable and searchable. Everything runs on your device; the file is never uploaded.</p>
+            </>
           )}
 
-          {file && !error && (
-            <div class="btn-row">
-              <button class="btn btn-primary" onClick={run} disabled={!level}>Get compressed PDF</button>
-              <button class="btn btn-ghost" onClick={reset}>Clear</button>
-            </div>
-          )}
-          {error && (
+          {nothingHelps && (
             <>
-              <p class="tool-error">{error}</p>
+              <p class="method-note" style="margin-top:1.25rem">This PDF is already efficiently compressed, so we cannot make it meaningfully smaller without harming quality. We will not offer a result that enlarges your file.</p>
               <div class="btn-row"><button class="btn btn-ghost" onClick={reset}>Clear</button></div>
             </>
           )}
 
-          {result && (
+          {error && (
             <>
-              <div class="stat-row" style="margin-top:1.25rem">
-                <div class="stat"><div class="stat-val">{formatBytes(result.before)}</div><div class="stat-label">before</div></div>
-                <div class="stat"><div class="stat-val">{formatBytes(result.blob.size)}</div><div class="stat-label">after</div></div>
-                <div class="stat">
-                  <div class="stat-val" style="color:var(--green)">−{saved}%</div>
-                  <div class="stat-label">saved</div>
-                </div>
-              </div>
-              <div class="btn-row">
-                <button class="btn btn-primary" onClick={() => downloadBlob(result.blob, (file?.name.replace(/\.pdf$/i, '') || 'file') + '-compressed.pdf')}>
-                  Download compressed PDF
-                </button>
-              </div>
+              <p class="tool-error" style="margin-top:1rem">{error}</p>
+              <div class="btn-row"><button class="btn btn-ghost" onClick={reset}>Clear</button></div>
             </>
           )}
         </>
       )}
       <style>{`
-        .level-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.6rem; }
+        .level-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.6rem; margin-top:0.5rem; }
         .level {
           display:flex; flex-direction:column; align-items:flex-start; gap:0.15rem;
           padding:0.75rem 0.9rem; background:#fff; border:1px solid var(--hairline);
@@ -226,7 +188,7 @@ export default function PdfCompress() {
           transition:border-color .15s var(--ease), box-shadow .15s var(--ease), opacity .15s var(--ease);
         }
         .level.on { border-color:var(--blue); box-shadow:0 0 0 1px var(--blue); }
-        .level:disabled { opacity:0.45; cursor:not-allowed; }
+        .level:disabled { opacity:0.5; cursor:not-allowed; }
         .lv-name { font-weight:600; font-size:var(--t-small); color:var(--ink); }
         .lv-hint { font-size:0.78rem; color:var(--dim); }
         .lv-est { font-size:0.78rem; color:var(--dim); margin-top:0.3rem; min-height:1em; }

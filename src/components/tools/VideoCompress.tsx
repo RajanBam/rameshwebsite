@@ -75,6 +75,10 @@ export default function VideoCompress() {
   const busy = progress >= 0 && progress < 100;
   const saved = result ? Math.round((1 - result.blob.size / result.before) * 100) : 0;
   const est = (k: Level) => (duration > 0 ? estimateSize(duration, LEVELS[k].vKbps, LEVELS[k].aKbps) : null);
+  // Only offer a level if it cuts the file by at least half.
+  const worthIt = (k: Level) => { const e = est(k); return e != null && file != null && e <= file.size * 0.5; };
+  const anyWorth = file != null && duration > 0 && LEVEL_KEYS.some(worthIt);
+  const alreadySmall = file != null && duration > 0 && !anyWorth;
 
   return (
     <div class="tool-card">
@@ -98,19 +102,20 @@ export default function VideoCompress() {
               onChange={(e) => { const t = e.target as HTMLInputElement; if (t.files) add(t.files); t.value = ''; }} />
           </div>
 
-          {file && (
+          {file && anyWorth && (
             <div class="field" style="margin-top:1.25rem">
               <label class="field-label">Output quality</label>
               <div class="level-grid">
                 {LEVEL_KEYS.map((k) => {
                   const e = est(k);
-                  const smaller = e != null && file != null && e < file.size;
+                  const good = worthIt(k);
                   return (
-                    <button key={k} class={`level ${level === k ? 'on' : ''}`} onClick={() => setLevel(k)}>
+                    <button key={k} class={`level ${level === k ? 'on' : ''}`} disabled={!good}
+                      onClick={() => good && setLevel(k)}>
                       <span class="lv-name">{LEVELS[k].label}</span>
                       <span class="lv-hint">{LEVELS[k].hint}</span>
-                      <span class={`lv-est num ${smaller ? 'good' : ''}`}>
-                        {e != null ? `~${formatBytes(e)}${smaller ? ` · −${Math.round((1 - e / file.size) * 100)}%` : ''}` : ''}
+                      <span class={`lv-est num ${good ? 'good' : 'bad'}`}>
+                        {e != null ? (good ? `~${formatBytes(e)} · −${Math.round((1 - e / file.size) * 100)}%` : 'too small to help') : ''}
                       </span>
                     </button>
                   );
@@ -120,9 +125,13 @@ export default function VideoCompress() {
             </div>
           )}
 
+          {alreadySmall && (
+            <p class="method-note" style="margin-top:1.25rem">This video is already efficiently compressed, so we cannot cut its size by half without noticeably hurting quality. Nothing to do here.</p>
+          )}
+
           {file && (
             <div class="btn-row">
-              <button class="btn btn-primary" onClick={run}>Compress video</button>
+              {anyWorth && <button class="btn btn-primary" onClick={run}>Compress video</button>}
               <button class="btn btn-ghost" onClick={() => { setFile(null); setResult(null); setError(''); }}>Clear</button>
             </div>
           )}
@@ -159,10 +168,13 @@ export default function VideoCompress() {
           transition:border-color .15s var(--ease), box-shadow .15s var(--ease);
         }
         .level.on { border-color:var(--blue); box-shadow:0 0 0 1px var(--blue); }
+        .level:disabled { opacity:0.5; cursor:not-allowed; }
         .lv-name { font-weight:600; font-size:var(--t-small); color:var(--ink); }
         .lv-hint { font-size:0.78rem; color:var(--dim); }
         .lv-est { font-size:0.78rem; color:var(--dim); margin-top:0.3rem; min-height:1em; }
         .lv-est.good { color:var(--green); font-weight:500; }
+        .lv-est.bad { color:#b45309; }
+        .method-note { font-size:0.82rem; color:var(--dim); line-height:1.5; }
         .engine-note { font-size:0.78rem; color:var(--dim); margin-top:0.75rem; }
       `}</style>
     </div>

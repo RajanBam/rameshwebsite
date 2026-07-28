@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { TOOLS } from '../lib/registry';
+import { TOOLS, CATEGORIES, toolsByCategory, type Category } from '../lib/registry';
 import { SITE } from '../lib/site';
 
 const jsonLd = [{
@@ -12,156 +12,310 @@ const jsonLd = [{
 }];
 
 const live = TOOLS.filter((t) => t.component);
+const cats = (Object.keys(CATEGORIES) as Category[]).map((id) => ({
+  id,
+  label: CATEGORIES[id].label,
+  blurb: CATEGORIES[id].blurb,
+  count: toolsByCategory(id).filter((t) => t.component).length,
+  first: toolsByCategory(id).find((t) => t.component)?.slug ?? '',
+}));
+
+const popular = ['pdf-compress', 'pdf-merge', 'image-compress', 'video-compress', 'heic-to-jpg', 'qr-generator']
+  .map((slug) => live.find((t) => t.slug === slug))
+  .filter(Boolean);
+
+const CAT_STYLE: Record<Category, { bg: string; fg: string; icon: string }> = {
+  pdf: { bg: '#fee2e2', fg: '#dc2626', icon: 'M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm7 1v4h4M9 13h6M9 17h6' },
+  image: { bg: '#e0f2fe', fg: '#0284c7', icon: 'M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm4 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-4 7l5-5 3 3 4-4 5 5' },
+  media: { bg: '#f3e8ff', fg: '#9333ea', icon: 'M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm5 4.5v7l6-3.5-6-3.5' },
+  finance: { bg: '#fef3c7', fg: '#d97706', icon: 'M5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm3 4h8M8 11h3m2 0h3M8 15h3m2 0h3' },
+  developer: { bg: '#e0e7ff', fg: '#4f46e5', icon: 'M8 6l-5 6 5 6M16 6l5 6-5 6M13 4l-2 16' },
+  text: { bg: '#dcfce7', fg: '#16a34a', icon: 'M4 6h16M4 12h16M4 18h10' },
+};
 ---
 
 <BaseLayout
   title={`${SITE.name}: free tools that never upload your files`}
-  description="PDF, image, text and finance tools that run 100% in your browser. Unlimited files, unlimited size, nothing uploaded, works offline."
-  keywords={['free online tools', 'client-side tools', 'merge pdf', 'compress images', 'privacy tools']}
+  description="PDF, image, video, text and finance tools that run 100% in your browser. Unlimited files, unlimited size, nothing uploaded, works offline."
+  keywords={['free online tools', 'client-side tools', 'compress pdf', 'compress images', 'compress video', 'privacy tools']}
   jsonLd={jsonLd}
 >
   <!-- Hero -->
-  <section class="stage stage-white">
-    <div class="container stage-inner center">
-      <h1 class="hero">Tools that keep<br />your files.</h1>
-      <p class="sub">Unlimited files. Nothing uploaded. Works offline.</p>
-      <div class="links">
-        <a class="action" href="/tools/">Browse all tools</a>
-        <a class="action" href="/privacy/">See how it works</a>
-      </div>
-      <p class="trust hero-trust"><span class="dot"></span>0&nbsp;B uploaded, ever</p>
-    </div>
-  </section>
-
-  <!-- PDF -->
-  <section class="stage stage-gray">
-    <div class="container stage-inner">
-      <div class="stage-copy">
-        <h2>Merge anything.<br />Upload nothing.</h2>
-        <p class="sub">Combine and split PDFs in the tab you're in. Contracts, IDs and bank statements never touch a server.</p>
-        <div class="links">
-          <a class="action" href="/tools/pdf-merge/">Merge PDF</a>
-          <a class="action" href="/tools/">More PDF tools</a>
+  <section class="hero-stage">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="dot"></span>Every file stays on your device</p>
+        <h1>Powerful tools.<br /><span class="grad">Zero uploads.</span></h1>
+        <p class="hero-sub">Compress PDFs, images, video and audio. Convert, merge, calculate and generate. {live.length} professional tools that run entirely in your browser, free and unlimited, because there is no server to pay for.</p>
+        <div class="hero-cta">
+          <a class="btn-solid" href="/tools/">Browse all {live.length} tools</a>
+          <a class="btn-line" href="/privacy/">How privacy works</a>
+        </div>
+        <div class="hero-badges">
+          <span>Free forever</span><i></i><span>No sign-up</span><i></i><span>No file limits</span><i></i><span>Works offline</span>
         </div>
       </div>
-      <div class="stage-visual">
-        <img class="shot" src="/thumbnails/pdf-merge.svg" alt="Merge PDF" width="360" height="270" />
-      </div>
-    </div>
-  </section>
 
-  <!-- Images -->
-  <section class="stage stage-white">
-    <div class="container stage-inner reverse">
-      <div class="stage-copy">
-        <h2>500 photos<br />at once.</h2>
-        <p class="sub">Compress and convert by the hundred. The batch workflow single-image tools never gave you.</p>
-        <div class="links">
-          <a class="action" href="/tools/image-compress/">Compress images</a>
-          <a class="action" href="/tools/">More image tools</a>
+      <!-- Product visual: a live-looking tool card -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="mock">
+          <div class="mock-head">
+            <span class="m-dot"></span><span class="m-dot"></span><span class="m-dot"></span>
+            <span class="m-title">Compress PDF</span>
+          </div>
+          <div class="mock-ring">
+            <svg viewBox="0 0 120 120" width="110" height="110">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(0,138,92,0.15)" stroke-width="9"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#008a5c" stroke-width="9" stroke-linecap="round"
+                stroke-dasharray="326.7" stroke-dashoffset="82" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="mock-pct num">75<i>%</i></div>
+          </div>
+          <div class="mock-label">Working on your device…</div>
+          <div class="mock-rows">
+            <div class="mock-row"><span>contract.pdf</span><b class="num">12.4 MB → 2.1 MB</b></div>
+            <div class="mock-row"><span>photos.zip</span><b class="num">−83%</b></div>
+          </div>
+          <div class="mock-foot"><span class="dot"></span>0 B uploaded</div>
         </div>
       </div>
-      <div class="stage-visual">
-        <img class="shot" src="/thumbnails/image-compress.svg" alt="Compress images" width="360" height="270" />
-      </div>
     </div>
   </section>
 
-  <!-- Calculators -->
-  <section class="stage stage-gray">
-    <div class="container stage-inner">
-      <div class="stage-copy">
-        <h2>Answers as<br />you type.</h2>
-        <p class="sub">Income tax, EMIs and more. Instant, precise, and never sent anywhere.</p>
-        <div class="links">
-          <a class="action" href="/tools/">See calculators</a>
-        </div>
-      </div>
-      <div class="stage-visual">
-        <img class="shot" src="/thumbnails/nepal-income-tax.svg" alt="Nepal income tax calculator" width="360" height="270" />
-      </div>
+  <!-- Stats band -->
+  <section class="band">
+    <div class="container band-grid">
+      <div class="band-item"><b class="num">{live.length}</b><span>free tools</span></div>
+      <div class="band-item"><b class="num">0 B</b><span>ever uploaded</span></div>
+      <div class="band-item"><b>100%</b><span>in your browser</span></div>
+      <div class="band-item"><b>0</b><span>accounts needed</span></div>
     </div>
   </section>
 
-  <!-- Offline statement -->
-  <section class="stage stage-white">
-    <div class="container stage-inner center">
-      <h2 class="statement">It even works<br />with the Wi-Fi off.</h2>
-      <p class="sub">There's no server to reach. Turn off your connection and try. Everything still runs.</p>
-      <a class="action" href="/privacy/">Don't trust us. Verify it.</a>
-    </div>
-  </section>
-
-  <!-- Quick links -->
-  <section class="stage stage-gray">
+  <!-- Categories -->
+  <section class="section">
     <div class="container">
-      <h3 class="quick-title">Jump in</h3>
-      <div class="quick-grid">
-        {live.map((t) => (
-          <a class="quick" href={`/tools/${t.slug}/`}>
-            <span>{t.name}</span>
-            <span class="action" aria-hidden="true"></span>
+      <h2 class="sec-title">Every tool, one shelf.</h2>
+      <p class="sec-sub">Six categories, built on the same engines the big-name sites run on their servers, running privately on yours.</p>
+      <div class="cat-grid">
+        {cats.map((c) => (
+          <a class="cat-card" href="/tools/" style={`--tint:${CAT_STYLE[c.id].bg};--tintfg:${CAT_STYLE[c.id].fg}`}>
+            <span class="cat-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={CAT_STYLE[c.id].icon} /></svg>
+            </span>
+            <span class="cat-name">{c.label}</span>
+            <span class="cat-blurb">{c.blurb}</span>
+            <span class="cat-count num">{c.count} tools</span>
           </a>
         ))}
       </div>
     </div>
   </section>
+
+  <!-- How it works -->
+  <section class="section section-gray">
+    <div class="container">
+      <h2 class="sec-title">Three steps. No fine print.</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-n num">1</span>
+          <h3>Drop your file</h3>
+          <p>It is opened right in the browser tab. It never travels anywhere.</p>
+        </div>
+        <div class="step">
+          <span class="step-n num">2</span>
+          <h3>Watch it work</h3>
+          <p>Your own device does the processing, with live progress and exact sizes shown before you commit.</p>
+        </div>
+        <div class="step">
+          <span class="step-n num">3</span>
+          <h3>Download</h3>
+          <p>The result saves straight to your device. Turn off the Wi-Fi and it still works.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular tools -->
+  <section class="section">
+    <div class="container">
+      <h2 class="sec-title">Most used</h2>
+      <div class="pop-grid">
+        {popular.map((t) => t && (
+          <a class="pop" href={`/tools/${t.slug}/`}>
+            <span class="pop-name">{t.name}</span>
+            <span class="pop-tag">{t.tagline}</span>
+            <span class="action" style="font-size:0.9rem">Open</span>
+          </a>
+        ))}
+      </div>
+      <div style="text-align:center;margin-top:2rem">
+        <a class="btn-line" href="/tools/">See all {live.length} tools</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy statement -->
+  <section class="section section-dark">
+    <div class="container center-block">
+      <h2 class="dark-title">Don't trust us. Verify us.</h2>
+      <p class="dark-sub">Open your Network tab, or turn off your internet, and use any tool. Nothing leaves your device, and you can prove it in thirty seconds.</p>
+      <a class="btn-solid btn-green" href="/privacy/">See how to verify</a>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .stage { padding-block: clamp(4rem, 12vw, 8rem); }
-  .stage-white { background: var(--white); }
-  .stage-gray { background: var(--gray); }
-  .stage-inner {
+  /* Hero */
+  .hero-stage {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(3.5rem, 9vw, 6.5rem) clamp(3rem, 7vw, 5rem);
+    background:
+      radial-gradient(600px 320px at 85% 10%, rgba(0, 102, 204, 0.07), transparent 70%),
+      radial-gradient(500px 300px at 8% 90%, rgba(0, 138, 92, 0.06), transparent 70%),
+      var(--white);
+  }
+  .hero-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: clamp(2rem, 6vw, 4rem);
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(2rem, 6vw, 4.5rem);
     align-items: center;
   }
-  .stage-inner.center { grid-template-columns: 1fr; text-align: center; justify-items: center; }
-  .hero { font-size: var(--t-hero); }
-  .statement { font-size: var(--t-stage); }
-  .stage-copy h2 { font-size: var(--t-stage); }
-  .sub {
-    margin-top: 1.25rem;
-    color: var(--dim);
-    font-size: var(--t-sub);
-    max-width: 30ch;
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 0.5em;
+    color: var(--green); font-weight: 600; font-size: var(--t-small);
+    background: rgba(0, 138, 92, 0.08);
+    padding: 0.35rem 0.8rem; border-radius: 999px;
   }
-  .center .sub { max-width: 40ch; }
-  .links { display: flex; gap: 1.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
-  .center .links { justify-content: center; }
-  .hero-trust { margin-top: 2rem; }
-
-  /* Floating product-card visuals */
-  .stage-visual { display: flex; justify-content: center; }
-  .shot {
-    width: min(400px, 100%);
-    height: auto;
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lift);
+  .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+  .hero-copy h1 { font-size: var(--t-hero); margin-top: 1.1rem; }
+  .grad {
+    background: linear-gradient(92deg, var(--blue), #00a86b);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
   }
+  .hero-sub { color: var(--dim); font-size: var(--t-sub); margin-top: 1.25rem; max-width: 54ch; }
+  .hero-cta { display: flex; gap: 0.9rem; margin-top: 1.75rem; flex-wrap: wrap; }
+  .btn-solid {
+    display: inline-flex; align-items: center;
+    background: var(--blue); color: #fff; font-weight: 600;
+    padding: 0.8rem 1.6rem; border-radius: 999px; font-size: var(--t-body);
+    transition: background 0.15s var(--ease), transform 0.15s var(--ease);
+  }
+  .btn-solid:hover { background: var(--blue-press); text-decoration: none; transform: translateY(-1px); }
+  .btn-green { background: var(--green); }
+  .btn-green:hover { background: #007a50; }
+  .btn-line {
+    display: inline-flex; align-items: center;
+    color: var(--ink); font-weight: 500;
+    padding: 0.8rem 1.6rem; border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.16); font-size: var(--t-body);
+    transition: border-color 0.15s var(--ease), background 0.15s var(--ease);
+  }
+  .btn-line:hover { border-color: var(--blue); color: var(--blue); text-decoration: none; }
+  .hero-badges {
+    display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;
+    margin-top: 1.75rem; color: var(--dim); font-size: var(--t-small);
+  }
+  .hero-badges i { width: 3px; height: 3px; border-radius: 50%; background: rgba(0,0,0,0.25); }
 
-  .quick-title { font-size: var(--t-title); margin-bottom: 1.5rem; }
-  .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
-  .quick {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 1.25rem;
+  /* Product mock */
+  .hero-visual { display: flex; justify-content: center; }
+  .mock {
+    width: min(340px, 100%);
     background: #fff;
     border: 1px solid var(--hairline);
-    border-radius: var(--radius-sm);
-    color: var(--ink);
-    font-weight: 500;
-    transition: transform 0.15s var(--ease);
+    border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(0, 30, 80, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 1.1rem 1.25rem 1.25rem;
+    transform: rotate(1.5deg);
   }
-  .quick:hover { transform: translateY(-2px); text-decoration: none; }
-  .quick .action { font-size: 1rem; }
+  .mock-head { display: flex; align-items: center; gap: 6px; padding-bottom: 0.75rem; border-bottom: 1px solid var(--hairline); }
+  .m-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(0,0,0,0.12); }
+  .m-title { margin-left: 0.5rem; font-weight: 600; font-size: 0.85rem; }
+  .mock-ring { position: relative; display: grid; place-items: center; margin-top: 1rem; }
+  .mock-pct { position: absolute; font-size: 1.4rem; font-weight: 600; }
+  .mock-pct i { font-style: normal; font-size: 0.8rem; color: var(--dim); }
+  .mock-label { text-align: center; color: var(--green); font-weight: 500; font-size: 0.85rem; margin-top: 0.5rem; }
+  .mock-rows { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .mock-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--gray); border-radius: 10px; padding: 0.5rem 0.75rem; font-size: 0.8rem;
+  }
+  .mock-row b { color: var(--green); font-weight: 600; }
+  .mock-foot { display: flex; align-items: center; gap: 0.4rem; justify-content: center; margin-top: 1rem; color: var(--green); font-size: 0.8rem; font-weight: 600; }
+  .mock-foot .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
 
-  @media (max-width: 720px) {
-    .stage-inner { grid-template-columns: 1fr; text-align: center; justify-items: center; }
-    .stage-inner.reverse .stage-copy { order: 0; }
-    .sub { max-width: 34ch; }
-    .links { justify-content: center; }
+  /* Stats band */
+  .band { border-block: 1px solid var(--hairline); background: var(--gray); }
+  .band-grid { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
+  .band-item { padding: 1.4rem 0.5rem; }
+  .band-item b { display: block; font-size: 1.5rem; letter-spacing: -0.02em; }
+  .band-item span { color: var(--dim); font-size: var(--t-small); }
+
+  /* Sections */
+  .section { padding-block: clamp(3.5rem, 9vw, 6rem); }
+  .section-gray { background: var(--gray); }
+  .sec-title { font-size: var(--t-stage); text-align: center; }
+  .sec-sub { text-align: center; color: var(--dim); font-size: var(--t-sub); margin: 1rem auto 0; max-width: 60ch; }
+
+  /* Categories */
+  .cat-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem; margin-top: 2.5rem;
+  }
+  .cat-card {
+    display: flex; flex-direction: column; gap: 0.3rem;
+    background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius-sm);
+    padding: 1.4rem; color: var(--ink);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  }
+  .cat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); text-decoration: none; }
+  .cat-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: grid; place-items: center;
+    background: var(--tint); color: var(--tintfg);
+    margin-bottom: 0.5rem;
+  }
+  .cat-name { font-weight: 600; font-size: 1.1rem; }
+  .cat-blurb { color: var(--dim); font-size: var(--t-small); }
+  .cat-count { margin-top: 0.5rem; color: var(--tintfg); font-size: 0.8rem; font-weight: 600; }
+
+  /* Steps */
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+  .step { background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius-sm); padding: 1.75rem; box-shadow: var(--shadow-card); }
+  .step-n {
+    display: inline-grid; place-items: center; width: 34px; height: 34px;
+    border-radius: 50%; background: rgba(0, 102, 204, 0.1); color: var(--blue); font-weight: 600;
+  }
+  .step h3 { font-size: 1.15rem; margin-top: 0.9rem; }
+  .step p { color: var(--dim); font-size: var(--t-small); margin-top: 0.5rem; line-height: 1.55; }
+
+  /* Popular */
+  .pop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+  .pop {
+    display: flex; flex-direction: column; gap: 0.25rem;
+    background: #fff; border: 1px solid var(--hairline); border-radius: var(--radius-sm);
+    padding: 1.25rem; color: var(--ink); box-shadow: var(--shadow-card);
+    transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  }
+  .pop:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); text-decoration: none; }
+  .pop-name { font-weight: 600; }
+  .pop-tag { color: var(--dim); font-size: var(--t-small); }
+  .pop .action { margin-top: 0.5rem; }
+
+  /* Dark privacy band */
+  .section-dark { background: #101418; }
+  .center-block { text-align: center; max-width: 640px; }
+  .dark-title { color: #fff; font-size: var(--t-stage); }
+  .dark-sub { color: rgba(255, 255, 255, 0.65); font-size: var(--t-sub); margin: 1.1rem 0 1.75rem; }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; text-align: center; }
+    .hero-copy .hero-sub { margin-inline: auto; }
+    .hero-cta, .hero-badges { justify-content: center; }
+    .band-grid { grid-template-columns: repeat(2, 1fr); }
+    .mock { transform: none; }
   }
 </style>
