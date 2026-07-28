@@ -56,6 +56,28 @@ const PROVIDERS: Provider[] = [
       return text;
     },
   },
+  // CORS-proxy fallbacks: guarantee reachability if a provider lacks CORS
+  // headers. The proxy only relays the request; no data is stored.
+  {
+    name: 'is.gd',
+    run: async (url) => {
+      const target = 'https://is.gd/create.php?format=json&url=' + encodeURIComponent(url);
+      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(target));
+      const j = await r.json();
+      if (!j.shorturl) throw new Error(j.errormessage || 'no shorturl');
+      return j.shorturl;
+    },
+  },
+  {
+    name: 'TinyURL',
+    run: async (url) => {
+      const target = 'https://tinyurl.com/api-create.php?url=' + encodeURIComponent(url);
+      const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(target));
+      const text = (await r.text()).trim();
+      if (!/^https?:\/\//.test(text)) throw new Error('bad response');
+      return text;
+    },
+  },
 ];
 
 function normalize(input: string): string | null {

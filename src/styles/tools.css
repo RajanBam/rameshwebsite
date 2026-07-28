@@ -206,3 +206,38 @@ input[type='range'] { accent-color: var(--blue); }
   white-space: pre-wrap;
 }
 .copy-line { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
+
+/* Finance calculators: inputs on the left, live Apple-style result on the right */
+.calc-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; align-items: start; }
+.calc-inputs { min-width: 0; }
+.result-panel {
+  position: sticky;
+  top: 68px;
+  background: linear-gradient(165deg, #1b232c 0%, #0a0d11 100%);
+  border-radius: 26px;
+  padding: 1.75rem 1.6rem 1.9rem;
+  color: #fff;
+  box-shadow: 0 24px 55px rgba(0, 20, 40, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.rp-label { font-size: 0.72rem; color: #8b97a5; text-transform: uppercase; letter-spacing: 0.08em; }
+.rp-big {
+  font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 500; letter-spacing: -0.02em;
+  line-height: 1.05; margin-top: 0.35rem; font-variant-numeric: tabular-nums;
+}
+.rp-big .rp-per { font-size: 1rem; color: #8b97a5; margin-left: 0.3rem; font-weight: 400; }
+.rp-tagsub { color: #8b97a5; font-size: 0.82rem; margin-top: 0.5rem; font-variant-numeric: tabular-nums; }
+.rp-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 1.35rem 0 1.1rem; }
+.rp-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.85rem; }
+.rp-row:last-child { margin-bottom: 0; }
+.rp-row .k { color: #8b97a5; font-size: 0.85rem; }
+.rp-row .v { font-weight: 500; font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+.rp-row .v.accent { color: #34d399; }
+.rp-row .v.warn { color: #fbbf24; }
+.rp-bar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, 0.1); margin-top: 1.1rem; }
+.rp-bar i { display: block; height: 100%; }
+.rp-foot { display: flex; align-items: center; gap: 0.4rem; margin-top: 1.2rem; color: #34d399; font-size: 0.75rem; }
+.rp-foot .dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; }
+@media (max-width: 760px) {
+  .calc-layout { grid-template-columns: 1fr; }
+  .result-panel { position: static; }
+}

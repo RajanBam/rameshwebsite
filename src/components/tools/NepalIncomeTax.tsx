@@ -21,72 +21,75 @@ export default function NepalIncomeTax() {
 
   return (
     <div class="tool-card">
-      <div class="seg-row">
-        <div class="seg">
-          <button class={period === 'monthly' ? 'on' : ''} onClick={() => setPeriod('monthly')}>Monthly</button>
-          <button class={period === 'annual' ? 'on' : ''} onClick={() => setPeriod('annual')}>Annual</button>
+      <div class="calc-layout">
+        <div class="calc-inputs">
+          <div class="seg-row">
+            <div class="seg">
+              <button class={period === 'monthly' ? 'on' : ''} onClick={() => setPeriod('monthly')}>Monthly</button>
+              <button class={period === 'annual' ? 'on' : ''} onClick={() => setPeriod('annual')}>Annual</button>
+            </div>
+            <div class="seg">
+              <button class={status === 'individual' ? 'on' : ''} onClick={() => setStatus('individual')}>Individual</button>
+              <button class={status === 'couple' ? 'on' : ''} onClick={() => setStatus('couple')}>Couple</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">{period === 'monthly' ? 'Monthly' : 'Annual'} income (Rs)</label>
+            <input class="text-input num" inputMode="numeric" value={income.toLocaleString('en-IN')}
+              onInput={(e) => setIncome(num((e.target as HTMLInputElement).value))} />
+          </div>
+
+          <div class="two-col">
+            <div class="field">
+              <label class="field-label">Retirement fund / yr (SSF·EPF·CIT)</label>
+              <input class="text-input num" inputMode="numeric" value={retirement.toLocaleString('en-IN')}
+                onInput={(e) => setRetirement(num((e.target as HTMLInputElement).value))} />
+            </div>
+            <div class="field">
+              <label class="field-label">Insurance / yr (life + health)</label>
+              <input class="text-input num" inputMode="numeric" value={insurance.toLocaleString('en-IN')}
+                onInput={(e) => setInsurance(num((e.target as HTMLInputElement).value))} />
+            </div>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" checked={ssfMember} onChange={(e) => setSsfMember((e.target as HTMLInputElement).checked)} />
+            I contribute to the Social Security Fund (SSF), which waives the 1% social security tax
+          </label>
+
+          <table class="breakdown">
+            <thead><tr><th>Slab</th><th>Rate</th><th>Taxable</th><th>Tax</th></tr></thead>
+            <tbody>
+              {result.bands.map((b) => (
+                <tr>
+                  <td>{b.label}</td>
+                  <td class="num">{(b.rate * 100).toFixed(0)}%</td>
+                  <td class="num">{formatNpr(b.taxable)}</td>
+                  <td class="num">{formatNpr(b.tax)}</td>
+                </tr>
+              ))}
+              {result.deductions > 0 && (
+                <tr class="muted"><td colSpan={3}>Deductions applied</td><td class="num">−{formatNpr(result.deductions)}</td></tr>
+              )}
+              <tr class="total"><td colSpan={3}>Total tax</td><td class="num">{formatNpr(result.totalTax)}</td></tr>
+            </tbody>
+          </table>
+
+          <p class="note">Taxable income after deductions: <span class="num">{formatNpr(result.taxableIncome)}</span>. Estimate for resident individuals on employment income; verify with a tax professional for your exact situation.</p>
         </div>
-        <div class="seg">
-          <button class={status === 'individual' ? 'on' : ''} onClick={() => setStatus('individual')}>Individual</button>
-          <button class={status === 'couple' ? 'on' : ''} onClick={() => setStatus('couple')}>Couple</button>
-        </div>
+
+        <aside class="result-panel">
+          <div class="rp-label">Tax payable · FY 2082/83</div>
+          <div class="rp-big num">{formatNpr(result.totalTax)}<span class="rp-per">/yr</span></div>
+          <div class="rp-tagsub">{formatNpr(result.totalTax / 12)}/mo · effective {(result.effectiveRate * 100).toFixed(1)}%</div>
+          <div class="rp-divider" />
+          <div class="rp-row"><span class="k">Gross income</span><span class="v num">{formatNpr(grossAnnual)}</span></div>
+          <div class="rp-row"><span class="k">Taxable income</span><span class="v num">{formatNpr(result.taxableIncome)}</span></div>
+          <div class="rp-row"><span class="k">Take-home</span><span class="v accent num">{formatNpr(result.takeHome)}</span></div>
+          <div class="rp-foot"><span class="dot" />Calculated on your device</div>
+        </aside>
       </div>
-
-      <div class="field">
-        <label class="field-label">{period === 'monthly' ? 'Monthly' : 'Annual'} income (Rs)</label>
-        <input class="text-input num" inputMode="numeric" value={income.toLocaleString('en-IN')}
-          onInput={(e) => setIncome(num((e.target as HTMLInputElement).value))} />
-      </div>
-
-      <div class="two-col">
-        <div class="field">
-          <label class="field-label">Retirement fund / yr (SSF·EPF·CIT)</label>
-          <input class="text-input num" inputMode="numeric" value={retirement.toLocaleString('en-IN')}
-            onInput={(e) => setRetirement(num((e.target as HTMLInputElement).value))} />
-        </div>
-        <div class="field">
-          <label class="field-label">Insurance / yr (life + health)</label>
-          <input class="text-input num" inputMode="numeric" value={insurance.toLocaleString('en-IN')}
-            onInput={(e) => setInsurance(num((e.target as HTMLInputElement).value))} />
-        </div>
-      </div>
-
-      <label class="check">
-        <input type="checkbox" checked={ssfMember} onChange={(e) => setSsfMember((e.target as HTMLInputElement).checked)} />
-        I contribute to the Social Security Fund (SSF), which waives the 1% social security tax
-      </label>
-
-      <div class="result-head">
-        <div>
-          <div class="rh-label">Tax payable · FY 2082/83</div>
-          <div class="rh-big num">{formatNpr(result.totalTax)}<span class="rh-per">/yr</span></div>
-          <div class="rh-sub num">{formatNpr(result.totalTax / 12)}/mo · effective {(result.effectiveRate * 100).toFixed(1)}%</div>
-        </div>
-        <div class="rh-take">
-          <div class="rh-label">Take-home</div>
-          <div class="rh-take-val num">{formatNpr(result.takeHome)}</div>
-        </div>
-      </div>
-
-      <table class="breakdown">
-        <thead><tr><th>Slab</th><th>Rate</th><th>Taxable</th><th>Tax</th></tr></thead>
-        <tbody>
-          {result.bands.map((b) => (
-            <tr>
-              <td>{b.label}</td>
-              <td class="num">{(b.rate * 100).toFixed(0)}%</td>
-              <td class="num">{formatNpr(b.taxable)}</td>
-              <td class="num">{formatNpr(b.tax)}</td>
-            </tr>
-          ))}
-          {result.deductions > 0 && (
-            <tr class="muted"><td colSpan={3}>Deductions applied</td><td class="num">−{formatNpr(result.deductions)}</td></tr>
-          )}
-          <tr class="total"><td colSpan={3}>Total tax</td><td class="num">{formatNpr(result.totalTax)}</td></tr>
-        </tbody>
-      </table>
-
-      <p class="note">Taxable income after deductions: <span class="num">{formatNpr(result.taxableIncome)}</span>. Estimate for resident individuals on employment income; verify with a tax professional for your exact situation.</p>
 
       <style>{`
         .seg-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; }
