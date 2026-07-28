@@ -21,3 +21,13 @@ cpSync(src.esm, 'public/ffmpeg/esm', { recursive: true });
 cpSync(src.coreJs, 'public/ffmpeg/ffmpeg-core.js');
 cpSync(src.coreWasm, 'public/ffmpeg/ffmpeg-core.wasm');
 console.log('ffmpeg runtime copied to public/ffmpeg/');
+
+// Ghostscript runtime for the PDF compressor (gs-worker.js is authored, not copied).
+const gs = 'node_modules/@jspawn/ghostscript-wasm';
+if (existsSync(gs + '/gs.wasm')) {
+  mkdirSync('public/gs', { recursive: true });
+  for (const f of ['gs.mjs', 'gs.js', 'browser.js', 'gs.wasm', 'LICENSE']) {
+    cpSync(`${gs}/${f}`, `public/gs/${f}`);
+  }
+  console.log('ghostscript runtime copied to public/gs/');
+}

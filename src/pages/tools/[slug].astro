@@ -25,6 +25,7 @@ import PasswordGenerator from '../../components/tools/PasswordGenerator.tsx';
 import CsvJson from '../../components/tools/CsvJson.tsx';
 import TimestampConverter from '../../components/tools/TimestampConverter.tsx';
 import ColorPicker from '../../components/tools/ColorPicker.tsx';
+import LinkInBio from '../../components/tools/LinkInBio.tsx';
 import WordCounter from '../../components/tools/WordCounter.tsx';
 import CaseConverter from '../../components/tools/CaseConverter.tsx';
 import LoremIpsum from '../../components/tools/LoremIpsum.tsx';
@@ -63,6 +64,7 @@ const tool = getTool(slug!)!;
   {tool.component === 'CsvJson' && <CsvJson client:load />}
   {tool.component === 'TimestampConverter' && <TimestampConverter client:only="preact" />}
   {tool.component === 'ColorPicker' && <ColorPicker client:load />}
+  {tool.component === 'LinkInBio' && <LinkInBio client:only="preact" />}
   {tool.component === 'WordCounter' && <WordCounter client:load />}
   {tool.component === 'CaseConverter' && <CaseConverter client:load />}
   {tool.component === 'LoremIpsum' && <LoremIpsum client:only="preact" />}

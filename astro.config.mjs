@@ -11,6 +11,8 @@ export default defineConfig({
     inlineStylesheets: 'auto',
   },
   vite: {
+    // Workers import WASM codecs (code-splitting), which needs ES format.
+    worker: { format: 'es' },
     build: {
       // Keep worker + wasm chunks predictable for offline caching later.
       assetsInlineLimit: 0,

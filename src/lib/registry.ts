@@ -126,16 +126,16 @@ export const TOOLS: Tool[] = [
     },
     content: {
       intro:
-        'Make a PDF smaller so it is easy to email or upload to a form. The file is rebuilt on your own device at the quality you choose, so it is never sent to a server. This works best for scanned documents and image-heavy PDFs.',
+        'Make a PDF smaller so it is easy to email or upload to a form. The same engine class that professional PDF services run on their servers runs here inside your browser, so your document is never uploaded. Text stays selectable; embedded images are downsampled to the quality you choose.',
       steps: [
-        'Drop in your PDF.',
-        'Pick a level: smaller file, balanced, or better quality.',
-        'Click Compress and download the smaller PDF.',
+        'Drop in your PDF. It is compressed at every quality level on your device.',
+        'Each level shows its exact resulting size and saving before you choose.',
+        'Pick a level and download the smaller PDF.',
       ],
       faq: [
-        { q: 'How much smaller will my PDF get?', a: 'It depends on the file. Scanned and photo-heavy PDFs often shrink dramatically. The tool shows the before and after size so you can see the saving.' },
+        { q: 'How much smaller will my PDF get?', a: 'It depends on the file. Image-heavy and scanned PDFs often shrink by well over half. The exact resulting size for every quality level is shown before you commit, and an option that would enlarge your file is never offered.' },
         { q: 'Is my PDF uploaded to compress it?', a: 'No. The whole process runs in your browser tab. Your document never leaves your device.' },
-        { q: 'Will the text still be selectable?', a: 'Compression re-renders each page for the smallest reliable size, so heavily compressed pages become flat images. Use the "better quality" level if you want to keep pages crisp.' },
+        { q: 'Will the text still be selectable?', a: 'Yes. Compression rewrites the PDF structure and downsamples embedded images, but text remains real text: selectable, searchable and crisp at any zoom.' },
       ],
     },
   },
@@ -435,6 +435,33 @@ export const TOOLS: Tool[] = [
           q: 'Do QR codes expire?',
           a: 'No. A QR code is just an encoded version of your text or link. It works as long as the link it points to works.',
         },
+      ],
+    },
+  },
+  {
+    slug: 'link-in-bio',
+    name: 'Link-in-Bio Page',
+    category: 'developer',
+    tagline: 'One page for all your links.',
+    component: 'LinkInBio',
+    seo: {
+      title: 'Free Link-in-Bio Page Builder: no subscription, no account',
+      description:
+        'Build a link-in-bio page and download it as one self-contained HTML file to host free anywhere. No monthly fee, no account, nothing uploaded.',
+      keywords: ['link in bio', 'linktree alternative', 'free bio page', 'link page builder', 'bio link free'],
+    },
+    content: {
+      intro:
+        'Build a single page that holds all of your links, the kind other services charge a monthly fee for, and download it as one self-contained HTML file you host for free. Everything is edited on your device, so nothing is uploaded and there is no account.',
+      steps: [
+        'Add your name, a short bio, a photo, and your links.',
+        'Pick a theme and watch the live preview update.',
+        'Download the HTML file and upload it to any free host, such as GitHub Pages or Netlify.',
+      ],
+      faq: [
+        { q: 'Is this really free with no subscription?', a: 'Yes. Popular bio-link services charge monthly for extra pages and features. This builder is free with no account, because it simply generates a file you own and host yourself.' },
+        { q: 'Where do I put the downloaded page?', a: 'Upload the single HTML file to any free static host, for example GitHub Pages, Netlify or Cloudflare Pages. Because everything is in one file, it works immediately.' },
+        { q: 'Is my information uploaded?', a: 'No. The page is built entirely in your browser. Your photo and links never leave your device until you choose to publish the file yourself.' },
       ],
     },
   },
