@@ -35,65 +35,63 @@ export default function EmiCalculator() {
 
   return (
     <div class="tool-card">
-      <div class="field">
-        <label class="field-label">Loan amount (Rs)</label>
-        <input class="text-input num" inputMode="numeric" value={principal.toLocaleString('en-IN')}
-          onInput={(e) => setPrincipal(num((e.target as HTMLInputElement).value))} />
-      </div>
-      <div class="two-col">
-        <div class="field">
-          <label class="field-label">Interest rate · {rate}% /yr</label>
-          <input type="range" min="1" max="30" step="0.1" value={rate} style="width:100%"
-            onInput={(e) => setRate(Number((e.target as HTMLInputElement).value))} />
+      <div class="calc-layout">
+        <div class="calc-inputs">
+          <div class="field">
+            <label class="field-label">Loan amount (Rs)</label>
+            <input class="text-input num" inputMode="numeric" value={principal.toLocaleString('en-IN')}
+              onInput={(e) => setPrincipal(num((e.target as HTMLInputElement).value))} />
+          </div>
+          <div class="two-col">
+            <div class="field">
+              <label class="field-label">Interest rate · {rate}% /yr</label>
+              <input type="range" min="1" max="30" step="0.1" value={rate} style="width:100%"
+                onInput={(e) => setRate(Number((e.target as HTMLInputElement).value))} />
+            </div>
+            <div class="field">
+              <label class="field-label">Tenure · {years} yr</label>
+              <input type="range" min="1" max="30" step="1" value={years} style="width:100%"
+                onInput={(e) => setYears(Number((e.target as HTMLInputElement).value))} />
+            </div>
+          </div>
+
+          <details class="sched">
+            <summary>Yearly breakdown</summary>
+            <table class="breakdown">
+              <thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+              <tbody>
+                {calc.rows.map((r) => (
+                  <tr>
+                    <td class="num">{r.year}</td>
+                    <td class="num">{formatNpr(r.principalPaid)}</td>
+                    <td class="num">{formatNpr(r.interestPaid)}</td>
+                    <td class="num">{formatNpr(r.balance)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
         </div>
-        <div class="field">
-          <label class="field-label">Tenure · {years} yr</label>
-          <input type="range" min="1" max="30" step="1" value={years} style="width:100%"
-            onInput={(e) => setYears(Number((e.target as HTMLInputElement).value))} />
-        </div>
-      </div>
 
-      <div class="emi-head">
-        <div class="rh-label">Monthly EMI</div>
-        <div class="emi-big num">{formatNpr(calc.emi)}</div>
+        <aside class="result-panel">
+          <div class="rp-label">Monthly EMI</div>
+          <div class="rp-big num">{formatNpr(calc.emi)}<span class="rp-per">/mo</span></div>
+          <div class="rp-tagsub">over {years} years · {rate}% p.a.</div>
+          <div class="rp-divider" />
+          <div class="rp-row"><span class="k">Principal</span><span class="v num">{formatNpr(calc.principal)}</span></div>
+          <div class="rp-row"><span class="k">Total interest</span><span class="v warn num">{formatNpr(calc.interest)}</span></div>
+          <div class="rp-row"><span class="k">Total payable</span><span class="v num">{formatNpr(calc.total)}</span></div>
+          <div class="rp-bar">
+            <i style={`width:${100 - interestPct}%;background:#3b82f6`} />
+            <i style={`width:${interestPct}%;background:#fbbf24`} />
+          </div>
+          <div class="rp-tagsub">interest is {interestPct}% of what you pay</div>
+          <div class="rp-foot"><span class="dot" />Calculated on your device</div>
+        </aside>
       </div>
-
-      <div class="stat-row" style="margin-top:1.25rem">
-        <div class="stat"><div class="stat-val num">{formatNpr(calc.principal)}</div><div class="stat-label">principal</div></div>
-        <div class="stat"><div class="stat-val num" style="color:#c26a00">{formatNpr(calc.interest)}</div><div class="stat-label">interest ({interestPct}%)</div></div>
-        <div class="stat"><div class="stat-val num">{formatNpr(calc.total)}</div><div class="stat-label">total payable</div></div>
-      </div>
-
-      <div class="bar">
-        <i style={`width:${100 - interestPct}%`} class="bar-p" />
-        <i style={`width:${interestPct}%`} class="bar-i" />
-      </div>
-
-      <details class="sched">
-        <summary>Yearly breakdown</summary>
-        <table class="breakdown">
-          <thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
-          <tbody>
-            {calc.rows.map((r) => (
-              <tr>
-                <td class="num">{r.year}</td>
-                <td class="num">{formatNpr(r.principalPaid)}</td>
-                <td class="num">{formatNpr(r.interestPaid)}</td>
-                <td class="num">{formatNpr(r.balance)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </details>
 
       <style>{`
         .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-        .emi-head { background: var(--gray); border-radius: var(--radius-sm); padding: 1.25rem 1.5rem; margin-top: 1rem; }
-        .rh-label { font-size: var(--t-small); color: var(--dim); }
-        .emi-big { font-size: clamp(2.25rem, 7vw, 3rem); font-weight: 500; color: var(--ink); line-height: 1.1; }
-        .bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; margin-top: 1.25rem; background: var(--gray); }
-        .bar-p { background: var(--blue); }
-        .bar-i { background: #f0a000; }
         .sched { margin-top: 1.5rem; }
         .sched summary { cursor: pointer; color: var(--blue); font-size: var(--t-small); }
         .breakdown { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: var(--t-small); }
