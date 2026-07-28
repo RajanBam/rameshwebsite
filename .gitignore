@@ -18,3 +18,7 @@ npm-debug.log*
 .vscode/
 .idea/
 
+
+# Local throwaway test/debug scripts (never commit)
+.*.mjs
+!astro.config.mjs
