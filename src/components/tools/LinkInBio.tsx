@@ -16,10 +16,19 @@ type ThemeKey = keyof typeof THEMES;
 
 let nextId = 3;
 
+/** Only allow safe link schemes; block javascript:, data:, etc. so the page
+ *  the user downloads and hosts can never run injected script. */
+function safeUrl(raw: string): string {
+  const u = raw.trim();
+  if (/^(https?:\/\/|mailto:|tel:)/i.test(u)) return u;
+  if (/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(u)) return 'https://' + u; // bare domain
+  return '#';
+}
+
 function buildHtml(name: string, bio: string, avatar: string, links: LinkRow[], t: (typeof THEMES)[ThemeKey]): string {
   const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const linkHtml = links.filter((l) => l.label && l.url).map((l) =>
-    `      <a class="lnk" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join('\n');
+    `      <a class="lnk" href="${esc(safeUrl(l.url))}" target="_blank" rel="noopener noreferrer">${esc(l.label)}</a>`).join('\n');
   const avatarHtml = avatar
     ? `<img class="avatar" src="${avatar}" alt="${esc(name)}" />`
     : `<div class="avatar avatar-ph">${esc((name || '?').charAt(0).toUpperCase())}</div>`;
@@ -139,7 +148,7 @@ export default function LinkInBio() {
 
         <div class="lib-preview">
           <span class="pv-label">Live preview</span>
-          <iframe class="pv-frame" title="preview" srcDoc={html} />
+          <iframe class="pv-frame" title="preview" srcDoc={html} sandbox="allow-popups allow-popups-to-escape-sandbox" />
         </div>
       </div>
       <style>{`

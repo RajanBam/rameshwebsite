@@ -102,6 +102,9 @@ export default function UrlShortener() {
     for (const p of PROVIDERS) {
       try {
         const short = await p.run(url);
+        // Defence in depth: never render a non-http(s) URL returned by a
+        // third-party API as a clickable link.
+        if (!/^https?:\/\/[^\s]+$/i.test(short)) throw new Error('unexpected response');
         const qr = await QRCode.toDataURL(short, { width: 240, margin: 1 });
         setResult({ short, via: p.name, qr });
         setBusy(false);

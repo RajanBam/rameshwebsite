@@ -63,10 +63,13 @@ export default function AudioCompress() {
   const busy = progress >= 0 && progress < 100;
   const saved = result ? Math.round((1 - result.blob.size / result.before) * 100) : 0;
   const est = (k: Level) => (duration > 0 ? estimateSize(duration, 0, LEVELS[k].kbps) : null);
-  // A level is only worth offering if it cuts the file by at least half.
-  const worthIt = (k: Level) => { const e = est(k); return e != null && file != null && e <= file.size * 0.5; };
-  const anyWorth = file != null && duration > 0 && LEVEL_KEYS.some(worthIt);
-  const alreadySmall = file != null && duration > 0 && !anyWorth;
+  // A level is only worth offering if it cuts the file by at least half. When
+  // duration cannot be read, we cannot estimate, so allow compression and
+  // skip the estimate rather than dead-end.
+  const known = duration > 0 && isFinite(duration);
+  const worthIt = (k: Level) => { if (!known) return true; const e = est(k); return e != null && file != null && e <= file.size * 0.5; };
+  const anyWorth = file != null && (!known || LEVEL_KEYS.some(worthIt));
+  const alreadySmall = file != null && known && !LEVEL_KEYS.some(worthIt);
 
   return (
     <div class="tool-card">
@@ -103,7 +106,7 @@ export default function AudioCompress() {
                       <span class="lv-name">{LEVELS[k].label}</span>
                       <span class="lv-hint">{LEVELS[k].hint} · {LEVELS[k].kbps} kbps</span>
                       <span class={`lv-est num ${good ? 'good' : 'bad'}`}>
-                        {e != null ? (good ? `~${formatBytes(e)} · −${Math.round((1 - e / file.size) * 100)}%` : 'too small to help') : ''}
+                        {!known ? 'ready' : e != null ? (good ? `~${formatBytes(e)} · −${Math.round((1 - e / file.size) * 100)}%` : 'too small to help') : ''}
                       </span>
                     </button>
                   );
