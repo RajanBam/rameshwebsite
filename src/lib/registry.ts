@@ -318,6 +318,34 @@ export const TOOLS: Tool[] = [
     },
   },
   {
+    slug: 'slowed-reverb',
+    name: 'Slowed + Reverb',
+    category: 'media',
+    tagline: 'Slowed, reverbed, sped up.',
+    component: 'SlowedReverb',
+    seo: {
+      title: 'Slowed + Reverb and Nightcore Maker: free, in your browser',
+      description:
+        'Make a slowed and reverb, super slowed, nightcore or sped-up version of any song. Preview live, export MP3. Free, no sign-up, nothing uploaded.',
+      keywords: ['slowed and reverb', 'slowed reverb maker', 'nightcore maker', 'sped up song', 'slow down song online'],
+    },
+    content: {
+      intro:
+        'Turn any song into a slowed and reverb, super slowed, nightcore or sped-up version, the kind people share after a release. Preview the effect live, tweak the speed and reverb, then export an MP3. Everything happens in your browser, so your music is never uploaded.',
+      steps: [
+        'Drop in a song (MP3, WAV, M4A or FLAC).',
+        'Pick a preset like Slowed + Reverb or Nightcore, or set the speed and reverb yourself.',
+        'Press Preview to hear it live, then Export MP3 to download your version.',
+      ],
+      faq: [
+        { q: 'How does slowed and reverb work?', a: 'Slowing the track lowers its pitch and tempo for that deep, dreamy sound, and a reverb adds space and echo. This tool does both with the browser audio engine and lets you preview before exporting.' },
+        { q: 'Can I make a nightcore or sped-up version too?', a: 'Yes. Choose the Nightcore or Sped Up preset, or drag the speed slider above 1x, to raise the tempo and pitch.' },
+        { q: 'Is my music uploaded?', a: 'No. The song is decoded, processed and exported entirely on your device. Nothing is sent to any server.' },
+        { q: 'What do I get to download?', a: 'A standard MP3 of your slowed, reverbed or sped-up track, ready to share or keep.' },
+      ],
+    },
+  },
+  {
     slug: 'audio-compress',
     name: 'Compress Audio',
     category: 'media',
