@@ -1,0 +1,14 @@
+# Security headers, applied by static hosts (Netlify, Cloudflare Pages).
+# The CSP is tuned to allow everything this site legitimately uses:
+#  - 'wasm-unsafe-eval': the in-browser engines (Ghostscript, ffmpeg, image
+#    codecs) are WebAssembly and need this to instantiate.
+#  - blob:/data: workers and images for the same engines and generated files.
+#  - connect-src lists the free URL-shortening services (the only external
+#    calls the site makes; every other tool is fully local).
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=()
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' blob: data:; connect-src 'self' blob: data: https://spoo.me https://cleanuri.com https://is.gd https://tinyurl.com https://api.allorigins.win; worker-src 'self' blob:; child-src 'self' blob: data:; frame-src 'self' blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'

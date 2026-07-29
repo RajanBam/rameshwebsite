@@ -50,7 +50,7 @@ const siteName = SITE.name;
     <link rel="manifest" href="/site.webmanifest" />
 
     {jsonLd.map((obj) => (
-      <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+      <script type="application/ld+json" set:html={JSON.stringify(obj).replace(/</g, '\\u003c')} />
     ))}
   </head>
   <body>
