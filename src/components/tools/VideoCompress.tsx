@@ -49,10 +49,13 @@ export default function VideoCompress() {
       const { height, vKbps, aKbps } = LEVELS[level];
       const inName = 'in' + (file.name.match(/\.[a-z0-9]+$/i)?.[0] ?? '.mp4');
       await ff.writeFile(inName, new Uint8Array(await file.arrayBuffer()));
+      // ultrafast preset + capped frame rate keeps in-browser encoding as
+      // quick as possible; bitrate targeting still controls the output size.
       await ff.exec([
         '-i', inName,
-        '-vf', `scale=-2:'min(${height},ih)'`,
-        '-c:v', 'libx264', '-b:v', `${vKbps}k`, '-preset', 'veryfast',
+        '-vf', `scale=-2:'min(${height},ih)',fps='min(30,source_fps)'`,
+        '-c:v', 'libx264', '-b:v', `${vKbps}k`,
+        '-preset', 'ultrafast', '-tune', 'fastdecode',
         '-c:a', 'aac', '-b:a', `${aKbps}k`,
         '-movflags', '+faststart',
         'out.mp4',
