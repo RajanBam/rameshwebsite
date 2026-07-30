@@ -61,6 +61,38 @@ export async function renderEffect(buffer: AudioBuffer, s: EffectSettings): Prom
   return ctx.startRendering();
 }
 
+/** Extract [startSec, endSec) of a buffer into a new AudioBuffer. */
+export function sliceBuffer(buffer: AudioBuffer, startSec: number, endSec: number): AudioBuffer {
+  const rate = buffer.sampleRate;
+  const s = Math.max(0, Math.floor(startSec * rate));
+  const e = Math.min(buffer.length, Math.floor(endSec * rate));
+  const len = Math.max(1, e - s);
+  const ctx = new OfflineAudioContext(buffer.numberOfChannels, len, rate);
+  const out = ctx.createBuffer(buffer.numberOfChannels, len, rate);
+  for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+    out.getChannelData(ch).set(buffer.getChannelData(ch).subarray(s, e));
+  }
+  return out;
+}
+
+/** Concatenate buffers end-to-end (resampled to the first buffer's rate). */
+export function concatBuffers(buffers: AudioBuffer[]): AudioBuffer {
+  const rate = buffers[0].sampleRate;
+  const channels = Math.max(...buffers.map((b) => b.numberOfChannels));
+  const total = buffers.reduce((n, b) => n + b.length, 0);
+  const ctx = new OfflineAudioContext(channels, total, rate);
+  const out = ctx.createBuffer(channels, total, rate);
+  let offset = 0;
+  for (const b of buffers) {
+    for (let ch = 0; ch < channels; ch++) {
+      const src = b.getChannelData(Math.min(ch, b.numberOfChannels - 1));
+      out.getChannelData(ch).set(src, offset);
+    }
+    offset += b.length;
+  }
+  return out;
+}
+
 function floatTo16(input: Float32Array): Int16Array {
   const out = new Int16Array(input.length);
   for (let i = 0; i < input.length; i++) {

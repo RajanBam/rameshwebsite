@@ -13,6 +13,8 @@ import ImageResize from '../../components/tools/ImageResize.tsx';
 import VideoCompress from '../../components/tools/VideoCompress.tsx';
 import AudioCompress from '../../components/tools/AudioCompress.tsx';
 import SlowedReverb from '../../components/tools/SlowedReverb.tsx';
+import AudioCutter from '../../components/tools/AudioCutter.tsx';
+import AudioJoiner from '../../components/tools/AudioJoiner.tsx';
 import HeicToJpg from '../../components/tools/HeicToJpg.tsx';
 import NepalIncomeTax from '../../components/tools/NepalIncomeTax.tsx';
 import EmiCalculator from '../../components/tools/EmiCalculator.tsx';
@@ -55,6 +57,8 @@ const tool = getTool(slug!)!;
   {tool.component === 'VideoCompress' && <VideoCompress client:only="preact" />}
   {tool.component === 'AudioCompress' && <AudioCompress client:only="preact" />}
   {tool.component === 'SlowedReverb' && <SlowedReverb client:only="preact" />}
+  {tool.component === 'AudioCutter' && <AudioCutter client:only="preact" />}
+  {tool.component === 'AudioJoiner' && <AudioJoiner client:only="preact" />}
   {tool.component === 'HeicToJpg' && <HeicToJpg client:load />}
   {tool.component === 'NepalIncomeTax' && <NepalIncomeTax client:load />}
   {tool.component === 'EmiCalculator' && <EmiCalculator client:load />}

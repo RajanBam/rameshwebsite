@@ -47,7 +47,7 @@ const jsonLd = faqLd ? [appLd, faqLd] : [appLd];
     </header>
 
     <!-- The tool itself (interactive island). -->
-    <section class="tool-stage container">
+    <section class={`tool-stage container ${tool.wide ? 'tool-stage-wide' : ''}`}>
       <slot />
     </section>
 
@@ -107,6 +107,7 @@ const jsonLd = faqLd ? [appLd, faqLd] : [appLd];
     margin-top: clamp(2rem, 5vw, 3rem);
     max-width: 860px;
   }
+  .tool-stage-wide { max-width: 1040px; }
   .ad-slot { max-width: 860px; min-height: 0; }
   .tool-content {
     max-width: 720px;
