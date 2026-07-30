@@ -16,4 +16,17 @@ export const SITE = {
     'Free tools that run entirely in your browser. Unlimited files, nothing uploaded, works offline.',
   /** Contact address surfaced on About, Contact and legal pages. */
   email: 'contact@rameshkadariya.com.np',
+
+  /** Google AdSense publisher ID, e.g. 'ca-pub-1234567890123456'.
+   *  Leave EMPTY to keep all ads off (the site ships with no ad code at all).
+   *  To turn ads on after you are approved by AdSense:
+   *    1. Paste your publisher ID here.
+   *    2. Create an ad unit in the AdSense dashboard and paste its ID into
+   *       `adsenseInlineSlot` below (this is the ad shown under each tool).
+   *    3. In public/_headers, switch the CSP line to the AdSense-ready one
+   *       noted there, or the ads will be blocked by the security policy. */
+  adsense: '',
+  /** Ad unit ID for the slot shown below each tool. Only used when `adsense`
+   *  is also set. Leave empty to show no inline unit (Auto ads still work). */
+  adsenseInlineSlot: '',
 } as const;
