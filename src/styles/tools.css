@@ -207,6 +207,37 @@ input[type='range'] { accent-color: var(--blue); }
 }
 .copy-line { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem; }
 
+/* Shared "deck": dark, immersive panel for the audio/media tools */
+.sr-card { background: transparent; border: none; box-shadow: none; padding: 0; }
+.sr-reading { color: var(--dim); font-size: var(--t-small); margin-top: 0.75rem; }
+.deck {
+  background: linear-gradient(165deg, #241938 0%, #120b1f 100%);
+  border-radius: 24px; padding: 1.5rem clamp(1rem, 3vw, 1.9rem) 1.9rem; color: #f3eefb;
+  box-shadow: 0 24px 60px rgba(40, 10, 80, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.deck-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.deck-track { display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
+.deck-name { font-weight: 600; font-size: 0.98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: min(70vw, 480px); }
+.deck-meta { color: #b6a8d4; font-size: 0.8rem; margin-top: 0.15rem; font-variant-numeric: tabular-nums; }
+.deck-x { background: rgba(255, 255, 255, 0.08); border: none; color: #d7ccf0; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; flex: none; }
+.deck-x:hover { background: rgba(255, 255, 255, 0.16); }
+.deck-slider { margin-top: 1.2rem; }
+.deck-slider .ds-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.82rem; color: #cdc0ea; }
+.deck-slider .ds-head b { font-size: 1.05rem; color: #fff; font-variant-numeric: tabular-nums; }
+.deck-slider input[type='range'] { width: 100%; margin-top: 0.4rem; accent-color: #a78bfa; }
+.ds-scale { display: flex; justify-content: space-between; color: #8f80b3; font-size: 0.7rem; margin-top: 0.25rem; }
+.deck-actions { display: flex; gap: 0.7rem; margin-top: 1.5rem; flex-wrap: wrap; }
+.deck-btn { flex: 1; min-width: 140px; border: none; border-radius: 999px; padding: 0.8rem 1rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: filter 0.15s, background 0.15s; }
+.deck-btn.solid { background: #7c3aed; color: #fff; }
+.deck-btn.solid:hover { filter: brightness(1.12); }
+.deck-btn.ghost { background: rgba(255, 255, 255, 0.08); color: #f3eefb; }
+.deck-btn.ghost:hover { background: rgba(255, 255, 255, 0.14); }
+.deck-btn.ghost.on { background: rgba(167, 139, 250, 0.22); }
+.deck-note { color: #8f80b3; font-size: 0.76rem; text-align: center; margin-top: 0.9rem; }
+.deck-result { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1.25rem; padding: 1rem 1.1rem; background: rgba(255, 255, 255, 0.06); border-radius: 14px; font-size: 0.9rem; }
+.deck-result .deck-btn { flex: none; min-width: 0; padding: 0.6rem 1.2rem; }
+.deck .tool-error { color: #fca5a5; }
+
 /* Finance calculators: inputs on the left, live Apple-style result on the right */
 .calc-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; align-items: start; }
 .calc-inputs { min-width: 0; }

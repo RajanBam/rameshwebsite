@@ -49,6 +49,15 @@ const siteName = SITE.name;
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
 
+    {/* Google AdSense loader — only emitted when a publisher ID is set in
+        src/lib/site.ts, so the site ships ad-free until you opt in. */}
+    {SITE.adsense && (
+      <>
+        <meta name="google-adsense-account" content={SITE.adsense} />
+        <script is:inline async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsense}`} crossorigin="anonymous"></script>
+      </>
+    )}
+
     {jsonLd.map((obj) => (
       <script type="application/ld+json" set:html={JSON.stringify(obj).replace(/</g, '\\u003c')} />
     ))}

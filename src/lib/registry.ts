@@ -29,6 +29,8 @@ export interface Tool {
   component?: string;
   /** Batch tool? Drives the "unlimited files" copy + queue UI. */
   batch?: boolean;
+  /** Give this tool a wider, more immersive stage (media/audio tools). */
+  wide?: boolean;
   seo: {
     title: string;        // <title>
     description: string;   // meta description
@@ -294,7 +296,9 @@ export const TOOLS: Tool[] = [
     name: 'Compress Video',
     category: 'media',
     tagline: 'Smaller videos. Same device.',
-    component: 'VideoCompress',
+    // Temporarily disabled: in-browser video encoding is too slow for large
+    // files to feel good. Shown as "Soon" until it is fast enough to ship.
+    // component: 'VideoCompress',
     seo: {
       title: 'Compress Video: reduce video file size free, in your browser',
       description:
@@ -323,6 +327,7 @@ export const TOOLS: Tool[] = [
     category: 'media',
     tagline: 'Slowed, reverbed, sped up.',
     component: 'SlowedReverb',
+    wide: true,
     seo: {
       title: 'Slowed + Reverb and Nightcore Maker: free, in your browser',
       description:
@@ -342,6 +347,62 @@ export const TOOLS: Tool[] = [
         { q: 'Can I make a nightcore or sped-up version too?', a: 'Yes. Choose the Nightcore or Sped Up preset, or drag the speed slider above 1x, to raise the tempo and pitch.' },
         { q: 'Is my music uploaded?', a: 'No. The song is decoded, processed and exported entirely on your device. Nothing is sent to any server.' },
         { q: 'What do I get to download?', a: 'A standard MP3 of your slowed, reverbed or sped-up track, ready to share or keep.' },
+      ],
+    },
+  },
+  {
+    slug: 'audio-cutter',
+    name: 'Audio Cutter',
+    category: 'media',
+    tagline: 'Trim a song to the part you want.',
+    component: 'AudioCutter',
+    wide: true,
+    seo: {
+      title: 'Audio Cutter and Trimmer: cut MP3 online free, in your browser',
+      description:
+        'Cut and trim any song or audio online. Drag to select the part you want, preview it, and download an MP3. Free, no sign-up, nothing uploaded.',
+      keywords: ['audio cutter', 'mp3 cutter', 'trim audio online', 'cut song online', 'ringtone maker'],
+    },
+    content: {
+      intro:
+        'Cut a clip out of any song or recording. Drag the start and end handles to the part you want, preview it, and download a trimmed MP3. It is perfect for ringtones and clips, and it all happens in your browser, so nothing is uploaded.',
+      steps: [
+        'Drop in an audio file.',
+        'Drag the start and end handles to select the section you want.',
+        'Preview it, then download the trimmed MP3.',
+      ],
+      faq: [
+        { q: 'Can I make a ringtone with this?', a: 'Yes. Trim the exact section you want and download it as an MP3 to use as a ringtone or clip.' },
+        { q: 'Is my audio uploaded?', a: 'No. The file is cut entirely on your device. Nothing is sent to any server.' },
+        { q: 'Which formats can I cut?', a: 'MP3, WAV, M4A, OGG and FLAC. The trimmed clip is exported as an MP3.' },
+      ],
+    },
+  },
+  {
+    slug: 'audio-joiner',
+    name: 'Audio Joiner',
+    category: 'media',
+    tagline: 'Join clips into one track.',
+    component: 'AudioJoiner',
+    wide: true,
+    seo: {
+      title: 'Audio Joiner and Merger: combine MP3 files free, in your browser',
+      description:
+        'Join and merge multiple audio files into one track online. Reorder clips, then download a single MP3. Free, no sign-up, nothing uploaded.',
+      keywords: ['audio joiner', 'merge mp3', 'combine audio files', 'join songs online', 'audio merger'],
+    },
+    content: {
+      intro:
+        'Combine several songs or clips into one continuous track. Add your files, drag to reorder them, and download a single merged MP3. Everything runs in your browser, so your audio is never uploaded.',
+      steps: [
+        'Add two or more audio files.',
+        'Drag them into the order you want.',
+        'Click Join and download the combined MP3.',
+      ],
+      faq: [
+        { q: 'Can I reorder the clips?', a: 'Yes. Drag the clips up or down before joining so they play in the order you want.' },
+        { q: 'Is my audio uploaded?', a: 'No. The files are merged on your device. Nothing is sent to a server.' },
+        { q: 'What do I get to download?', a: 'A single MP3 containing all of your clips, one after another.' },
       ],
     },
   },

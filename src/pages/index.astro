@@ -20,7 +20,7 @@ const cats = (Object.keys(CATEGORIES) as Category[]).map((id) => ({
   first: toolsByCategory(id).find((t) => t.component)?.slug ?? '',
 }));
 
-const popular = ['pdf-compress', 'pdf-merge', 'image-compress', 'video-compress', 'heic-to-jpg', 'qr-generator']
+const popular = ['slowed-reverb', 'pdf-compress', 'image-compress', 'url-shortener', 'audio-cutter', 'qr-generator']
   .map((slug) => live.find((t) => t.slug === slug))
   .filter(Boolean);
 

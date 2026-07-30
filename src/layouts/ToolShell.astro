@@ -1,5 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import AdSlot from '../components/AdSlot.astro';
+import { SITE } from '../lib/site';
 import type { Tool } from '../lib/registry';
 
 export interface Props {
@@ -47,13 +49,15 @@ const jsonLd = faqLd ? [appLd, faqLd] : [appLd];
     </header>
 
     <!-- The tool itself (interactive island). -->
-    <section class="tool-stage container">
+    <section class={`tool-stage container ${tool.wide ? 'tool-stage-wide' : ''}`}>
       <slot />
     </section>
 
-    <!-- Ad slot: ALWAYS below the tool/result, never above. Empty until
-         AdSense is integrated (months 2–3). Reserved to avoid layout shift. -->
-    <div class="ad-slot container" aria-hidden="true"></div>
+    <!-- Ad slot: ALWAYS below the tool/result, never above. Renders only
+         when AdSense is configured in src/lib/site.ts; otherwise empty. -->
+    <div class="ad-slot container">
+      <AdSlot slot={SITE.adsenseInlineSlot} />
+    </div>
 
     <!-- Below the fold: the SEO + AdSense content layer. -->
     {content && (
@@ -107,6 +111,7 @@ const jsonLd = faqLd ? [appLd, faqLd] : [appLd];
     margin-top: clamp(2rem, 5vw, 3rem);
     max-width: 860px;
   }
+  .tool-stage-wide { max-width: 1040px; }
   .ad-slot { max-width: 860px; min-height: 0; }
   .tool-content {
     max-width: 720px;
